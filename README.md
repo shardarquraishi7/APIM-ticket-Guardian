@@ -4,8 +4,6 @@ A comprehensive Next.js starter kit optimized for Cloudflare Workers deployment,
 
 > ⚠️ **Important Note**: This starter kit is designed for **experimentation, prototyping, and hackathons only**. Cloudflare Workers deployment is not considered production-ready by TELUS standards and should be used for testing concepts and rapid development.
 
-![TELUS Next.js Cloudflare Starter Kit](public/telus-logo-black-and-white.png)
-
 ## 🚀 Features
 
 - **Next.js 14 App Router**: Latest Next.js features with App Router and React Server Components
