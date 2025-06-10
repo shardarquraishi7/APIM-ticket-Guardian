@@ -167,23 +167,76 @@ export default {
 
 ### Deploying to Cloudflare Workers
 
+This starter kit uses the [OpenNext Cloudflare adapter](https://opennext.js.org/) for optimal Next.js compatibility with Cloudflare Workers.
+
+#### Prerequisites
+
 1. Authenticate with Cloudflare:
 
 ```bash
 wrangler login
 ```
 
-2. Build the application:
+#### For Mac/Linux Users
+
+1. Build and deploy in one command:
+
+```bash
+npm run deploy
+```
+
+This will automatically build your Next.js app using the OpenNext adapter and deploy it to Cloudflare Workers.
+
+#### For Windows Users
+
+⚠️ **Windows Compatibility Note**: The OpenNext adapter has known compatibility issues with Windows. For Windows users, we recommend:
+
+1. **Use WSL (Windows Subsystem for Linux)** - This is the recommended approach:
+   ```bash
+   # Install WSL if not already installed
+   wsl --install
+   
+   # Run the project in WSL
+   wsl
+   cd /path/to/your/project
+   npm run deploy
+   ```
+
+2. **Alternative: Use GitHub Actions** - Set up automated deployment:
+   - Push your code to GitHub
+   - Use GitHub Actions with Ubuntu runners for deployment
+   - See `.github/workflows/deploy.yml` for example configuration
+
+3. **Development**: Local development works fine on Windows:
+   ```bash
+   npm run dev  # This works perfectly on Windows
+   ```
+
+#### Manual Deployment Steps
+
+If you prefer to run the steps manually:
+
+1. Build the application:
 
 ```bash
 npm run build
 ```
 
-3. Deploy to Cloudflare Workers:
+2. Deploy to Cloudflare Workers:
 
 ```bash
 npm run deploy
 ```
+
+#### Testing Your Deployment
+
+You can test your deployment locally before deploying:
+
+```bash
+npm run preview
+```
+
+This runs your app in a local Cloudflare Workers environment.
 
 ### Environment Configuration
 
@@ -220,6 +273,19 @@ The starter kit includes a fully integrated TELUS OAuth authentication system. T
 - **User Profile Access**: Easy access to authenticated user information
 - **Automatic Token Refresh**: Handles token expiration gracefully
 - **Logout Functionality**: Simple logout function for user sign-out
+
+### Development vs Production
+
+The OAuth system automatically detects your environment:
+
+- **Development (localhost)**: OAuth is automatically bypassed for seamless development
+  - No authentication prompts during local development
+  - Mock user data provided for testing (`Development User`, `dev@localhost`)
+  - Automatic detection of localhost, 127.0.0.1, and local network addresses
+- **Production (Cloudflare)**: Full OAuth authentication is enforced
+  - Complete TELUS OAuth flow with token validation
+  - Secure JWT token handling and refresh
+  - Production-ready security features
 
 ### How to Use
 
