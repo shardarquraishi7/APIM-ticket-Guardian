@@ -30,7 +30,7 @@ export default function GettingStartedPage() {
         <h3 className="text-xl font-bold text-telus-purple mt-6 mb-3">Windows Users</h3>
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
           <p className="mb-2">
-            <strong>Important:</strong> If you're using Windows, we strongly recommend using{' '}
+            <strong>Important:</strong> If you&apos;re using Windows, we strongly recommend using{' '}
             <a href="https://docs.microsoft.com/en-us/windows/wsl/install" className="text-telus-purple hover:underline">
               Windows Subsystem for Linux (WSL)
             </a>{' '}
