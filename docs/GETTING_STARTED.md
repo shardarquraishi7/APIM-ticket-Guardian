@@ -12,6 +12,17 @@ Before you begin, make sure you have the following installed:
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/) (for Cloudflare Workers deployment)
 - [Cloudflare Account](https://dash.cloudflare.com/sign-up) (free tier is sufficient for prototyping)
 
+### Windows Users
+
+**Important:** If you're using Windows, we strongly recommend using [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install) for the best development experience. This ensures compatibility with Node.js tooling and Cloudflare Workers development workflows.
+
+To install WSL:
+```bash
+wsl --install
+```
+
+Then install Node.js within your WSL environment rather than on Windows directly.
+
 ## Step 1: Clone the Repository
 
 ```bash

@@ -26,6 +26,24 @@ export default function GettingStartedPage() {
           <li><a href="https://developers.cloudflare.com/workers/wrangler/install-and-update/" className="text-telus-purple hover:underline">Wrangler CLI</a> (for Cloudflare Workers deployment)</li>
           <li><a href="https://dash.cloudflare.com/sign-up" className="text-telus-purple hover:underline">Cloudflare Account</a> (free tier is sufficient for prototyping)</li>
         </ul>
+
+        <h3 className="text-xl font-bold text-telus-purple mt-6 mb-3">Windows Users</h3>
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+          <p className="mb-2">
+            <strong>Important:</strong> If you're using Windows, we strongly recommend using{' '}
+            <a href="https://docs.microsoft.com/en-us/windows/wsl/install" className="text-telus-purple hover:underline">
+              Windows Subsystem for Linux (WSL)
+            </a>{' '}
+            for the best development experience. This ensures compatibility with Node.js tooling and Cloudflare Workers development workflows.
+          </p>
+          <p className="mb-2">To install WSL:</p>
+          <div className="bg-gray-100 p-2 rounded font-mono text-sm">
+            <code>wsl --install</code>
+          </div>
+          <p className="mt-2 text-sm">
+            Then install Node.js within your WSL environment rather than on Windows directly.
+          </p>
+        </div>
         
         <h2 className="text-2xl font-bold text-telus-purple mt-8 mb-4">Step 1: Clone the Repository</h2>
         <div className="bg-gray-100 p-4 rounded-md font-mono text-sm overflow-x-auto mb-6">
