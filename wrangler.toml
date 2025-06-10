@@ -20,18 +20,18 @@ vars = { ENVIRONMENT = "staging" }
 name = "kevin-cfw-nextjs-starter-ui-prototype"
 vars = { ENVIRONMENT = "prototype" }
 
-# D1 Database configuration
-[[d1_databases]]
-binding = "DB"
-database_name = "starter_kit_db"
-database_id = "placeholder-id" # Will be replaced with actual ID after creation
+# D1 Database configuration (uncomment and create database if needed)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "starter_kit_db"
+# database_id = "placeholder-id" # Will be replaced with actual ID after creation
 
 # Example KV namespace for caching
 [[kv_namespaces]]
 binding = "CACHE"
 id = "placeholder-id" # Will be replaced with actual ID after creation
 
-# Example R2 bucket for file storage
-[[r2_buckets]]
-binding = "FILES"
-bucket_name = "starter-kit-files"
+# Example R2 bucket for file storage (uncomment and create bucket if needed)
+# [[r2_buckets]]
+# binding = "FILES"
+# bucket_name = "starter-kit-files"

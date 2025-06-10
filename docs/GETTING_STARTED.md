@@ -38,6 +38,7 @@ This script will:
 - Install Wrangler CLI if not already installed
 - Create `.env` and `.env.local` files if they don't exist
 - Help you set up Cloudflare D1 database (optional)
+- Help you set up Cloudflare KV namespace (required for deployment)
 
 ## Step 4: Start the Development Server
 
@@ -60,13 +61,23 @@ The starter kit includes several examples and features to help you get started:
 
 If you want to use Cloudflare D1 for database storage, follow these steps:
 
-1. Create a D1 database:
+1. Uncomment the D1 configuration in `wrangler.toml`:
+
+```toml
+# Remove the # comments from these lines:
+[[d1_databases]]
+binding = "DB"
+database_name = "starter_kit_db"
+database_id = "placeholder-id"
+```
+
+2. Create a D1 database:
 
 ```bash
 npm run db:create
 ```
 
-2. Update the `wrangler.toml` file with your database ID (from the output of the previous command):
+3. Update the `wrangler.toml` file with your database ID (from the output of the previous command):
 
 ```toml
 [[d1_databases]]
@@ -75,27 +86,69 @@ database_name = "starter-kit-db"
 database_id = "your-database-id-here" # Replace with your database ID
 ```
 
-3. Apply the schema to your database:
+4. Apply the schema to your database:
 
 ```bash
 npm run db:migrate
 ```
 
-## Step 7: Set Up Cloudflare R2 Storage (Optional)
+## Step 7: Set Up Cloudflare KV Namespace (Required for Deployment)
+
+The starter kit uses Cloudflare KV for caching and session data. You'll need to set up a KV namespace for deployment to work properly:
+
+1. Create a KV namespace:
+
+```bash
+npm run kv:create
+```
+
+2. Update the `wrangler.toml` file with your KV namespace ID (from the output of the previous command):
+
+```toml
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id-here" # Replace with your KV namespace ID
+```
+
+3. (Optional) For testing with Wrangler's preview mode, you can also create a preview namespace:
+
+```bash
+npm run kv:create-preview
+```
+
+Then add the preview ID to your `wrangler.toml`:
+
+```toml
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id-here"
+preview_id = "your-preview-kv-namespace-id-here"
+```
+
+## Step 8: Set Up Cloudflare R2 Storage (Optional)
 
 If you want to use Cloudflare R2 for file storage, follow these steps:
 
-1. Create an R2 bucket:
+1. Uncomment the R2 configuration in `wrangler.toml`:
+
+```toml
+# Remove the # comments from these lines:
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "starter-kit-files"
+```
+
+2. Create an R2 bucket:
 
 ```bash
 npm run r2:create
 ```
 
-2. Update the `wrangler.toml` file with your bucket configuration (if needed).
+3. Update the bucket name in `wrangler.toml` if you used a different name.
 
-## Step 8: Deploy to Cloudflare Workers
+## Step 9: Deploy Your Prototype to Cloudflare Workers
 
-When you're ready to deploy your application to Cloudflare Workers:
+When you're ready to deploy your prototype to Cloudflare Workers for testing and experimentation:
 
 1. Build the application:
 
@@ -109,19 +162,7 @@ npm run build
 npm run deploy
 ```
 
-This will deploy your application to Cloudflare Workers. The URL will be displayed in the terminal.
-
-## Step 9: Deploy to Different Environments (Optional)
-
-The starter kit includes scripts for deploying to different environments:
-
-```bash
-# Deploy to staging environment
-npm run deploy:staging
-
-# Deploy to prototype environment
-npm run deploy:prototype
-```
+This will deploy your prototype to Cloudflare Workers. The URL will be displayed in the terminal.
 
 ## Common Tasks
 
@@ -204,4 +245,5 @@ If you encounter issues deploying to Cloudflare Workers:
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
 - [Cloudflare D1 Documentation](https://developers.cloudflare.com/d1/)
+- [Cloudflare KV Documentation](https://developers.cloudflare.com/kv/)
 - [Cloudflare R2 Documentation](https://developers.cloudflare.com/r2/)

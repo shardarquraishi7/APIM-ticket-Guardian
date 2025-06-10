@@ -131,7 +131,34 @@ binding = "FILES"
 bucket_name = "starter-kit-files"
 ```
 
-## 🔐 Cloudflare Functions
+## 🗂️ KV Namespace Setup
+
+This starter kit includes a Cloudflare KV namespace for caching and key-value storage:
+
+1. Create a KV namespace:
+
+```bash
+wrangler kv:namespace create "CACHE"
+```
+
+2. Update the `wrangler.toml` file with your KV namespace ID:
+
+```toml
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id-here" # Replace with your KV namespace ID
+```
+
+3. For production environments, create separate KV namespaces:
+
+```bash
+wrangler kv:namespace create "CACHE" --env staging
+wrangler kv:namespace create "CACHE" --env prototype
+```
+
+Then add the corresponding IDs to the respective environment sections in `wrangler.toml`.
+
+## � Cloudflare Functions
 
 This starter kit includes Cloudflare Functions for server-side operations, including OAuth token validation:
 

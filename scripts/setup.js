@@ -200,6 +200,35 @@ ENVIRONMENT=development
     }
   }
   
+  // Ask if the user wants to set up Cloudflare KV
+  const setupKV = await askQuestion(colorize('Do you want to set up Cloudflare KV namespace? (y/n): ', colors.bright));
+  
+  if (setupKV.toLowerCase() === 'y') {
+    printHeader('Setting up Cloudflare KV');
+    
+    printInfo('You need to be logged in to Cloudflare to create a KV namespace.');
+    printInfo('If you are not logged in, you will be prompted to log in.');
+    
+    const proceed = await askQuestion(colorize('Proceed with Cloudflare login? (y/n): ', colors.bright));
+    
+    if (proceed.toLowerCase() === 'y') {
+      try {
+        execSync('wrangler login', { stdio: 'inherit' });
+        printSuccess('Logged in to Cloudflare');
+        
+        printInfo('Creating KV namespace...');
+        execSync('npm run kv:create', { stdio: 'inherit' });
+        
+        printInfo('Creating preview KV namespace...');
+        execSync('npm run kv:create-preview', { stdio: 'inherit' });
+        
+        printInfo('Please update your wrangler.toml file with the KV namespace IDs from the output above.');
+      } catch (error) {
+        printError('Failed to set up Cloudflare KV. Please try again later or set it up manually.');
+      }
+    }
+  }
+  
   // Final instructions
   printHeader('Setup Complete');
   

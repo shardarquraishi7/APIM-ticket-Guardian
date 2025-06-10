@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "opennextjs-cloudflare build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
@@ -18,6 +18,8 @@
     "db:create": "wrangler d1 create starter-kit-db",
     "db:migrate": "wrangler d1 execute starter-kit-db --file=./database/schema.sql",
     "db:seed": "wrangler d1 execute starter-kit-db --file=./database/seed.sql",
+    "kv:create": "wrangler kv namespace create \"CACHE\"",
+    "kv:create-preview": "wrangler kv namespace create \"CACHE\" --preview",
     "r2:create": "wrangler r2 bucket create starter-kit-files"
   },
   "dependencies": {
