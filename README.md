@@ -15,7 +15,7 @@ A comprehensive Next.js starter kit optimized for Cloudflare Workers deployment,
 - **API Routes**: Ready-to-use API examples with Cloudflare D1 integration
 - **Dashboard Layout**: Responsive dashboard with data visualization examples
 - **File Upload**: File upload examples with Cloudflare R2 storage
-- **Authentication Structure**: Ready for OAuth integration
+- **OAuth Authentication**: Integrated TELUS OAuth for secure authentication
 
 ## 📋 Quick Start
 
@@ -131,6 +131,38 @@ binding = "FILES"
 bucket_name = "starter-kit-files"
 ```
 
+## 🔐 Cloudflare Functions
+
+This starter kit includes Cloudflare Functions for server-side operations, including OAuth token validation:
+
+### Token Validation Function
+
+The `functions/validate-token.js` function provides secure server-side validation of JWT tokens:
+
+```javascript
+// functions/validate-token.js
+export async function onRequest(context) {
+  // Validates JWT tokens using TELUS JWKS
+  // ...
+}
+```
+
+This function is automatically deployed as a Cloudflare Function and is accessible at `/validate-token`.
+
+### Worker Integration
+
+The `src/worker.js` file integrates with Cloudflare Workers to handle API routes and token validation:
+
+```javascript
+// src/worker.js
+export default {
+  async fetch(request, env) {
+    // Handle API routes and token validation
+    // ...
+  }
+};
+```
+
 ## 🚀 Deployment
 
 ### Deploying to Cloudflare Workers
@@ -179,7 +211,81 @@ Each example includes detailed documentation and code snippets.
 
 ## 🔒 Authentication
 
-The starter kit includes a basic authentication structure that's ready for OAuth integration. The authentication flow is designed to work with the TELUS OAuth wrapper that will be provided separately.
+The starter kit includes a fully integrated TELUS OAuth authentication system. This provides enterprise-grade security for your application with minimal configuration.
+
+### OAuth Features
+
+- **Drop-in Authentication**: Simply wrap your app with the OAuthWrapper component
+- **JWT Token Validation**: Secure validation of tokens using TELUS JWKS
+- **User Profile Access**: Easy access to authenticated user information
+- **Automatic Token Refresh**: Handles token expiration gracefully
+- **Logout Functionality**: Simple logout function for user sign-out
+
+### How to Use
+
+1. **Protect Your App**: The entire application is already protected by wrapping the content in `layout.tsx` with the OAuthWrapper component.
+
+```tsx
+// src/app/layout.tsx
+import OAuthWrapper from "@/components/OAuthWrapper";
+
+// ...
+<main className="flex-grow">
+  <OAuthWrapper>
+    {children}
+  </OAuthWrapper>
+</main>
+```
+
+2. **Access User Information**: Use the `useUser` hook to access the authenticated user's information.
+
+```tsx
+import { useUser } from "@/components/OAuthWrapper";
+
+function ProfileComponent() {
+  const user = useUser();
+  
+  return (
+    <div>
+      <h1>Welcome, {user?.name || 'User'}!</h1>
+      <p>Email: {user?.email}</p>
+    </div>
+  );
+}
+```
+
+3. **Implement Logout**: Use the provided logout function.
+
+```tsx
+import { logout } from "@/components/OAuthWrapper";
+
+function LogoutButton() {
+  return (
+    <button onClick={() => logout()}>
+      Sign Out
+    </button>
+  );
+}
+```
+
+### Configuration
+
+The OAuth integration is configured to work with the TELUS OAuth service. The default configuration points to:
+
+```javascript
+const OAUTH_WORKER_URL = 'https://cio-cf-oauth-worker.telus.workers.dev'
+```
+
+You can modify this URL in `src/components/OAuthWrapper.tsx` if needed.
+
+### Token Validation
+
+JWT tokens are validated both client-side and server-side:
+
+1. **Client-side**: Basic validation of token format and expiration
+2. **Server-side**: Full signature validation using TELUS JWKS via Cloudflare Functions
+
+See the `/examples/auth` page for a complete demonstration of the OAuth functionality.
 
 ## 🎨 TELUS Styling
 
