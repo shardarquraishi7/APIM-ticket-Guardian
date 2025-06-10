@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import OAuthWrapper from "@/components/OAuthWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,7 +57,9 @@ export default function RootLayout({
         </header>
         
         <main className="flex-grow">
-          {children}
+          <OAuthWrapper>
+            {children}
+          </OAuthWrapper>
         </main>
         
         <footer className="footer mt-auto">
