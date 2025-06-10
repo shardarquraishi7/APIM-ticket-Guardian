@@ -10,7 +10,21 @@ Before you begin, make sure you have the following installed:
 - [npm](https://www.npmjs.com/) (v8 or later)
 - [Git](https://git-scm.com/)
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/) (for Cloudflare Workers deployment)
-- [Cloudflare Account](https://dash.cloudflare.com/sign-up) (free tier is sufficient for prototyping)
+
+### Cloudflare Account Setup
+
+**Important:** Each team member can create their own [Cloudflare account](https://dash.cloudflare.com/sign-up) for development and testing.
+
+#### Benefits of a Free Cloudflare Account:
+- **100,000 free requests per day** on the Workers free tier
+- **10 GB of free storage** with Cloudflare R2
+- **1 GB of free database storage** with Cloudflare D1
+- **Unlimited KV operations** for caching and session data (up to 1,000 keys)
+- **Global edge deployment** across 300+ data centers worldwide
+- **Built-in analytics and monitoring** for your applications
+- **No credit card required** for the free tier
+
+The free tier is more than sufficient for prototyping, development, and small-scale applications. This allows each developer to have their own isolated environment for testing without affecting shared resources.
 
 ### Windows Users
 

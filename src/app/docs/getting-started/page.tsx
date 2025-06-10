@@ -24,8 +24,45 @@ export default function GettingStartedPage() {
           <li><a href="https://www.npmjs.com/" className="text-telus-purple hover:underline">npm</a> (v8 or later)</li>
           <li><a href="https://git-scm.com/" className="text-telus-purple hover:underline">Git</a></li>
           <li><a href="https://developers.cloudflare.com/workers/wrangler/install-and-update/" className="text-telus-purple hover:underline">Wrangler CLI</a> (for Cloudflare Workers deployment)</li>
-          <li><a href="https://dash.cloudflare.com/sign-up" className="text-telus-purple hover:underline">Cloudflare Account</a> (free tier is sufficient for prototyping)</li>
         </ul>
+
+        <h3 className="text-xl font-bold text-telus-purple mt-6 mb-3">Cloudflare Account Setup</h3>
+        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+          <p className="mb-4">
+            <strong>Important:</strong> Each team member can create their own{' '}
+            <a href="https://dash.cloudflare.com/sign-up" className="text-telus-purple hover:underline">
+              Cloudflare account
+            </a>{' '}
+            for development and testing.
+          </p>
+          
+          <h4 className="font-bold text-telus-purple mb-2">Benefits of a Free Cloudflare Account:</h4>
+          <ul className="list-disc pl-6 space-y-1 text-sm">
+            <li><strong>100,000 free requests per day</strong> on the Workers free tier</li>
+            <li><strong>10 GB of free storage</strong> with Cloudflare R2</li>
+            <li><strong>1 GB of free database storage</strong> with Cloudflare D1</li>
+            <li><strong>Unlimited KV operations</strong> for caching and session data (up to 1,000 keys)</li>
+            <li><strong>Global edge deployment</strong> across 300+ data centers worldwide</li>
+            <li><strong>Built-in analytics and monitoring</strong> for your applications</li>
+            <li><strong>No credit card required</strong> for the free tier</li>
+          </ul>
+          
+          <p className="mt-3 text-sm mb-4">
+            The free tier is more than sufficient for prototyping, development, and small-scale applications.
+            This allows each developer to have their own isolated environment for testing without affecting shared resources.
+          </p>
+          
+          <div className="mt-4">
+            <a
+              href="https://dash.cloudflare.com/sign-up"
+              className="inline-block bg-telus-purple text-white px-6 py-2 rounded hover:bg-opacity-90 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Create Free Cloudflare Account →
+            </a>
+          </div>
+        </div>
 
         <h3 className="text-xl font-bold text-telus-purple mt-6 mb-3">Windows Users</h3>
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
@@ -231,7 +268,7 @@ bucket_name = "starter-kit-files"`}
         <ul className="list-disc pl-6 mb-6">
           <li>Check out the <Link href="/docs/customization" className="text-telus-purple hover:underline">Customization Guide</Link> to learn how to customize the starter kit</li>
           <li>Explore the <Link href="/examples" className="text-telus-purple hover:underline">Examples</Link> to see various features in action</li>
-          <li>Read about the project structure and available components</li>
+          <li>Read about the <Link href="/docs/project-structure" className="text-telus-purple hover:underline">Project Structure and Components</Link> to understand the codebase architecture</li>
         </ul>
 
         <h2 className="text-2xl font-bold text-telus-purple mt-8 mb-4">Resources</h2>

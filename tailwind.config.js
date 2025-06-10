@@ -8,9 +8,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'telus-purple': '#4B286D',       // TELUS Purple
+        'telus-purple': '#49286A',       // TELUS Purple
         'telus-green': '#2A8A3E',        // TELUS Green
-        'telus-light-green': '#00A04B',  // TELUS Light Green
+        'telus-light-green': '#66CC00',  // TELUS Light Green
+        'telus-dark-green': '#2B8000',   // TELUS Dark Green
         'telus-grey': '#54595F',         // TELUS Grey
         'telus-dark-grey': '#2C2C2E',    // TELUS Dark Grey
         'telus-light-grey': '#F8F9FA',   // TELUS Light Grey
