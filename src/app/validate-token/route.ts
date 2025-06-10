@@ -1,33 +1,23 @@
 /**
- * Cloudflare Function to validate JWT tokens using TELUS JWKS
- * This runs server-side, avoiding CORS issues
+ * Next.js API Route for JWT token validation using TELUS JWKS
+ * This handles the /validate-token endpoint called by the OAuth wrapper
  */
 
 const TELUS_JWKS_URL = 'https://apigw-pr.telus.com/id/jwks';
-// TELUS issuer URL for future token issuer validation if needed
-// const TELUS_ISSUER = 'https://apigw-pr.telus.com';
 
-export async function onRequest(context) {
-  if (context.request.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
-  }
-
+export async function POST(request: Request) {
   try {
-    const { token } = await context.request.json();
+    const { token } = await request.json();
     
     if (!token) {
-      return new Response(JSON.stringify({ valid: false, error: 'No token provided' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return Response.json({ valid: false, error: 'No token provided' }, { status: 400 });
     }
 
     const result = await validateToken(token);
     
-    return new Response(JSON.stringify(result), {
+    return Response.json(result, {
       status: result.valid ? 200 : 401,
-      headers: { 
-        'Content-Type': 'application/json',
+      headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST',
         'Access-Control-Allow-Headers': 'Content-Type'
@@ -36,14 +26,17 @@ export async function onRequest(context) {
 
   } catch (error) {
     console.error('Token validation error:', error);
-    return new Response(JSON.stringify({ valid: false, error: 'Internal server error' }), {
+    return Response.json({ valid: false, error: 'Internal server error' }, {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
   }
 }
 
-async function validateToken(idToken) {
+/**
+ * Validate JWT token with full signature verification
+ */
+async function validateToken(idToken: string) {
   try {
     // 1. Parse JWT payload
     const parts = idToken.split('.');
@@ -70,11 +63,15 @@ async function validateToken(idToken) {
     
   } catch (error) {
     console.error('Token validation failed:', error);
-    return { valid: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return { valid: false, error: errorMessage };
   }
 }
 
-async function verifyTokenSignature(idToken) {
+/**
+ * Verify JWT token signature using TELUS JWKS
+ */
+async function verifyTokenSignature(idToken: string) {
   try {
     // Parse JWT header to get kid and algorithm
     const [headerB64] = idToken.split('.');
@@ -96,7 +93,7 @@ async function verifyTokenSignature(idToken) {
     const jwks = await jwksResponse.json();
     
     // Find matching key
-    const key = jwks.keys?.find(k => k.kid === kid);
+    const key = jwks.keys?.find((k: { kid: string }) => k.kid === kid);
     if (!key) {
       throw new Error(`No key found for kid: ${kid}`);
     }
@@ -131,7 +128,10 @@ async function verifyTokenSignature(idToken) {
   }
 }
 
-function base64UrlDecode(str) {
+/**
+ * Utility function to decode base64url to Uint8Array
+ */
+function base64UrlDecode(str: string): Uint8Array {
   // Convert base64url to base64
   str = str.replace(/-/g, '+').replace(/_/g, '/');
   // Pad if necessary
