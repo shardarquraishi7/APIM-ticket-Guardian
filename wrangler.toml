@@ -1,0 +1,39 @@
+name = "kevin-cfw-nextjs-starter-ui"
+main = "./.next/server/index.js"
+compatibility_date = "2023-12-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[build]
+command = "npm run build"
+
+[site]
+bucket = "./.next/static"
+
+[env.development]
+name = "kevin-cfw-nextjs-starter-ui-dev"
+vars = { ENVIRONMENT = "development" }
+
+[env.staging]
+name = "kevin-cfw-nextjs-starter-ui-staging"
+vars = { ENVIRONMENT = "staging" }
+
+[env.prototype]
+name = "kevin-cfw-nextjs-starter-ui-prototype"
+vars = { ENVIRONMENT = "prototype" }
+
+# D1 Database configuration
+[[d1_databases]]
+binding = "DB"
+database_name = "starter_kit_db"
+database_id = "placeholder-id" # Will be replaced with actual ID after creation
+
+# Example KV namespace for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "placeholder-id" # Will be replaced with actual ID after creation
+
+# Example R2 bucket for file storage
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "starter-kit-files"

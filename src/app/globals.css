@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* TELUS Colors */
+  --telus-purple: #4B286D;
+  --telus-green: #2A8A3E;
+  --telus-light-green: #00A04B;
+  --telus-grey: #54595F;
+  --telus-dark-grey: #2C2C2E;
+  --telus-light-grey: #F8F9FA;
+  --telus-error: #C12335;
+  --telus-success: #2B8000;
+  --telus-warning: #FFA500;
+  --telus-info: #2A78C5;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #2C2C2E; /* TELUS Dark Grey for better readability */
+}
+
+/* Improve text contrast for content areas only */
+.container p, 
+.container li, 
+.container div:not(.header):not(.footer), 
+.container span,
+.card p,
+.card li,
+.card div,
+.card span {
+  color: #2C2C2E;
+}
+
+/* Keep headings purple for content areas */
+.container h1:not(.header h1), 
+.container h2:not(.header h2), 
+.container h3:not(.header h3), 
+.container h4:not(.header h4), 
+.container h5:not(.header h5), 
+.container h6:not(.header h6) {
+  color: #4B286D; /* TELUS Purple for headings */
+}
+
+/* Ensure proper contrast for gray text classes in content areas */
+.text-gray-600 {
+  color: #54595F !important; /* TELUS Grey instead of light gray */
+}
+
+.text-gray-300 {
+  color: #54595F !important; /* Better contrast */
+}
+
+.text-gray-400 {
+  color: #54595F !important; /* Better contrast */
+}
+
+/* Keep header and footer text white */
+.header,
+.header *,
+.footer,
+.footer * {
+  color: white !important;
+}
+
+/* Keep hero section text white, but allow buttons to override */
+.bg-telus-purple {
+  color: white !important;
+}
+
+.bg-telus-purple h1,
+.bg-telus-purple h2,
+.bg-telus-purple h3,
+.bg-telus-purple p {
+  color: white !important;
+}
+
+/* Button styling in purple sections */
+section.bg-telus-purple .btn,
+section.bg-telus-purple a.btn {
+  color: white;
+}
+
+/* Documentation button in hero section */
+section.bg-telus-purple .btn-outline.border-white {
+  color: white !important;
+}
+
+/* Documentation button hover state */
+section.bg-telus-purple .btn-outline.border-white:hover {
+  color: #4B286D !important; /* TELUS Purple */
+}
+
+/* Get Started Now button (white background) */
+section.bg-telus-purple .btn.bg-white,
+section.bg-telus-purple a.btn.bg-white {
+  color: #4B286D !important; /* TELUS Purple */
+}
+
+/* Ensure warning text is visible */
+section.bg-telus-purple .bg-black.bg-opacity-20 {
+  color: white !important;
+}
+
+/* CTA section at bottom of page */
+section.py-16.bg-telus-purple .btn.bg-white {
+  color: #4B286D !important; /* TELUS Purple */
+}
+
+@layer components {
+  /* TELUS-inspired Button Styles */
+  .btn {
+    @apply px-4 py-2 rounded font-medium transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-telus-purple text-white hover:bg-opacity-90;
+  }
+
+  .btn-secondary {
+    @apply bg-telus-green text-white hover:bg-opacity-90;
+  }
+
+  .btn-outline {
+    @apply border-2 border-telus-purple text-telus-purple hover:bg-telus-purple hover:bg-opacity-10;
+  }
+
+  /* TELUS-inspired Card Styles */
+  .card {
+    @apply bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden;
+  }
+
+  .card-header {
+    @apply p-4 border-b border-gray-200 bg-telus-light-grey;
+  }
+
+  .card-body {
+    @apply p-4;
+  }
+
+  .card-footer {
+    @apply p-4 border-t border-gray-200 bg-telus-light-grey;
+  }
+
+  /* TELUS-inspired Form Styles */
+  .form-control {
+    @apply mb-4;
+  }
+
+  .form-label {
+    @apply block text-telus-grey font-medium mb-1;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-telus-purple;
+  }
+
+  .form-error {
+    @apply text-telus-error text-sm mt-1;
+  }
+
+  /* TELUS-inspired Layout Styles */
+  .container {
+    @apply mx-auto px-4 max-w-7xl;
+  }
+
+  .header {
+    @apply bg-telus-purple text-white py-4;
+  }
+
+  .footer {
+    @apply bg-telus-dark-grey text-white py-6;
+  }
+
+  .sidebar {
+    @apply bg-telus-light-grey p-4 h-full;
+  }
+}
