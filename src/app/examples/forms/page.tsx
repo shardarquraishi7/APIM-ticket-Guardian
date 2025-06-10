@@ -95,7 +95,7 @@ export default function FormsExample() {
             <h2 className="text-xl font-bold text-telus-purple">Implementation Code</h2>
           </div>
           <div className="card-body p-0">
-            <div className="bg-gray-900 text-white p-4 rounded-md overflow-auto max-h-[500px]">
+            <div className="bg-gray-100 text-gray-800 p-4 rounded-md overflow-auto max-h-[500px] border">
               <pre className="text-sm">
 {`import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -184,28 +184,28 @@ export default function ContactForm() {
       </div>
 
       <div className="mt-8">
-        <h2 className="text-2xl font-bold text-telus-purple mb-4">Additional Form Examples</h2>
+        <h2 className="text-2xl font-bold text-telus-purple mb-4">Form Features Demonstrated</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href="/examples/forms/multi-step" className="card hover:shadow-lg transition-shadow duration-300">
+          <div className="card">
             <div className="card-body">
-              <h3 className="text-lg font-bold text-telus-purple mb-2">Multi-step Form</h3>
-              <p className="text-telus-grey">A wizard-style form with multiple steps and progress tracking.</p>
+              <h3 className="text-lg font-bold text-telus-purple mb-2">Validation</h3>
+              <p className="text-telus-grey">Client-side validation with Zod schema and real-time error messages.</p>
             </div>
-          </Link>
+          </div>
           
-          <Link href="/examples/forms/dynamic" className="card hover:shadow-lg transition-shadow duration-300">
+          <div className="card">
             <div className="card-body">
-              <h3 className="text-lg font-bold text-telus-purple mb-2">Dynamic Form</h3>
-              <p className="text-telus-grey">A form with dynamic fields that can be added or removed.</p>
+              <h3 className="text-lg font-bold text-telus-purple mb-2">Form Controls</h3>
+              <p className="text-telus-grey">Various input types including text, email, select, textarea, and checkbox.</p>
             </div>
-          </Link>
+          </div>
           
-          <Link href="/examples/forms/file-upload" className="card hover:shadow-lg transition-shadow duration-300">
+          <div className="card">
             <div className="card-body">
-              <h3 className="text-lg font-bold text-telus-purple mb-2">File Upload Form</h3>
-              <p className="text-telus-grey">A form with file upload capabilities using Cloudflare R2.</p>
+              <h3 className="text-lg font-bold text-telus-purple mb-2">Error Handling</h3>
+              <p className="text-telus-grey">Comprehensive error handling with user-friendly error messages.</p>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </div>

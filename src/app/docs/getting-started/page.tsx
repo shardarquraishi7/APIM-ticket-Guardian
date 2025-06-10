@@ -34,6 +34,8 @@ export default function GettingStartedPage() {
               Cloudflare account
             </a>{' '}
             for development and testing.
+            <br /><br />
+            <strong>Crucially, do not use your <code>@telus.com</code> email address when signing up for this personal Cloudflare account.</strong> Using your TELUS email will attempt to link your account to the TELUS organization&apos;s Cloudflare instance and enforce SSO. As your personal account won&apos;t be provisioned there, you will be unable to log in. Use a personal email address instead.
           </p>
           
           <h4 className="font-bold text-telus-purple mb-2">Benefits of a Free Cloudflare Account:</h4>
@@ -62,6 +64,14 @@ export default function GettingStartedPage() {
               Create Free Cloudflare Account →
             </a>
           </div>
+          
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+            <p className="text-sm text-green-800">
+              <strong>Security Note:</strong> Creating your own Cloudflare account is safe for experimentation and prototyping purposes.
+              The starter kit uses TELUS OAuth token validation to secure the application, ensuring that only authenticated TELUS users
+              can access your deployed prototypes. Your Cloudflare resources remain private to your account and are protected by the OAuth authentication layer.
+            </p>
+          </div>
         </div>
 
         <h3 className="text-xl font-bold text-telus-purple mt-6 mb-3">Windows Users</h3>
@@ -85,7 +95,7 @@ export default function GettingStartedPage() {
         <h2 className="text-2xl font-bold text-telus-purple mt-8 mb-4">Step 1: Clone the Repository</h2>
         <div className="bg-gray-100 p-4 rounded-md font-mono text-sm overflow-x-auto mb-6">
           <pre>
-{`git clone https://github.com/your-org/kevin-cfw-nextjs-starter-ui.git
+{`git clone https://github.com/telus/kevin-cfw-nextjs-starter-ui.git
 cd kevin-cfw-nextjs-starter-ui`}
           </pre>
         </div>

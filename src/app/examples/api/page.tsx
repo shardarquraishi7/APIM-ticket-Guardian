@@ -88,7 +88,7 @@ export default function ApiExamples() {
             <h2 className="text-xl font-bold text-telus-purple">Usage Example</h2>
           </div>
           <div className="card-body p-0">
-            <div className="bg-gray-900 text-white p-4 rounded-md overflow-auto max-h-[500px]">
+            <div className="bg-gray-100 text-gray-800 p-4 rounded-md overflow-auto max-h-[500px] border">
               <pre className="text-sm">
 {`// Example of fetching users from the API
 import { useState, useEffect } from 'react';
@@ -201,7 +201,7 @@ export default function UsersList() {
             
             <div className="bg-gray-100 p-4 rounded-md mb-4">
               <h4 className="font-bold text-telus-purple mb-2">1. Create a D1 Database</h4>
-              <pre className="bg-gray-900 text-white p-3 rounded-md text-sm overflow-auto">
+              <pre className="bg-gray-100 text-gray-800 p-3 rounded-md text-sm overflow-auto border">
                 wrangler d1 create starter-kit-db
               </pre>
               <p className="text-sm text-telus-grey mt-2">
@@ -214,7 +214,7 @@ export default function UsersList() {
               <p className="text-sm text-telus-grey mb-2">
                 Create a SQL file in the database directory:
               </p>
-              <pre className="bg-gray-900 text-white p-3 rounded-md text-sm overflow-auto">
+              <pre className="bg-gray-100 text-gray-800 p-3 rounded-md text-sm overflow-auto border">
 {`-- database/schema.sql
 CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -236,7 +236,7 @@ CREATE TABLE projects (
             
             <div className="bg-gray-100 p-4 rounded-md">
               <h4 className="font-bold text-telus-purple mb-2">3. Apply Schema to Database</h4>
-              <pre className="bg-gray-900 text-white p-3 rounded-md text-sm overflow-auto">
+              <pre className="bg-gray-100 text-gray-800 p-3 rounded-md text-sm overflow-auto border">
                 wrangler d1 execute starter-kit-db --file=./database/schema.sql
               </pre>
               <p className="text-sm text-telus-grey mt-2">
@@ -248,28 +248,28 @@ CREATE TABLE projects (
       </div>
 
       <div className="mt-8">
-        <h2 className="text-2xl font-bold text-telus-purple mb-4">Additional API Examples</h2>
+        <h2 className="text-2xl font-bold text-telus-purple mb-4">API Features Demonstrated</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href="/examples/api/crud" className="card hover:shadow-lg transition-shadow duration-300">
+          <div className="card">
             <div className="card-body">
               <h3 className="text-lg font-bold text-telus-purple mb-2">CRUD Operations</h3>
-              <p className="text-telus-grey">Complete CRUD example with D1 database integration.</p>
+              <p className="text-telus-grey">Complete CRUD example with D1 database integration using the users API.</p>
             </div>
-          </Link>
+          </div>
           
-          <Link href="/examples/api/external" className="card hover:shadow-lg transition-shadow duration-300">
+          <div className="card">
             <div className="card-body">
-              <h3 className="text-lg font-bold text-telus-purple mb-2">External API</h3>
-              <p className="text-telus-grey">Example of integrating with third-party APIs.</p>
+              <h3 className="text-lg font-bold text-telus-purple mb-2">Error Handling</h3>
+              <p className="text-telus-grey">Proper error handling and status codes for API responses.</p>
             </div>
-          </Link>
+          </div>
           
-          <Link href="/examples/api/auth" className="card hover:shadow-lg transition-shadow duration-300">
+          <div className="card">
             <div className="card-body">
-              <h3 className="text-lg font-bold text-telus-purple mb-2">Authentication API</h3>
-              <p className="text-telus-grey">API routes for authentication and authorization.</p>
+              <h3 className="text-lg font-bold text-telus-purple mb-2">Query Parameters</h3>
+              <p className="text-telus-grey">Filtering and pagination using URL query parameters.</p>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </div>

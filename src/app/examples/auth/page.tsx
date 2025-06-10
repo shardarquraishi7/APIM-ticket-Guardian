@@ -113,7 +113,7 @@ export default function AuthExamplePage() {
               <div className="p-4 bg-telus-light-grey rounded-lg">
                 <h4 className="font-bold mb-2">Header</h4>
                 <p className="text-sm">Contains metadata about the token type and signing algorithm.</p>
-                <pre className="mt-2 bg-gray-800 text-white p-2 rounded text-xs overflow-x-auto">
+                <pre className="mt-2 bg-gray-100 text-gray-800 p-2 rounded text-xs overflow-x-auto border">
                   {`{
   "alg": "RS256",
   "kid": "key-id",
@@ -125,7 +125,7 @@ export default function AuthExamplePage() {
               <div className="p-4 bg-telus-light-grey rounded-lg">
                 <h4 className="font-bold mb-2">Payload</h4>
                 <p className="text-sm">Contains user information and token expiration details.</p>
-                <pre className="mt-2 bg-gray-800 text-white p-2 rounded text-xs overflow-x-auto">
+                <pre className="mt-2 bg-gray-100 text-gray-800 p-2 rounded text-xs overflow-x-auto border">
                   {`{
   "sub": "user-id",
   "name": "User Name",
@@ -138,7 +138,7 @@ export default function AuthExamplePage() {
               <div className="p-4 bg-telus-light-grey rounded-lg">
                 <h4 className="font-bold mb-2">Signature</h4>
                 <p className="text-sm">Verifies the token hasn&apos;t been tampered with.</p>
-                <pre className="mt-2 bg-gray-800 text-white p-2 rounded text-xs overflow-x-auto">
+                <pre className="mt-2 bg-gray-100 text-gray-800 p-2 rounded text-xs overflow-x-auto border">
                   {`HMACSHA256(
   base64UrlEncode(header) + "." +
   base64UrlEncode(payload),

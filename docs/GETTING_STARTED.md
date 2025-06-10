@@ -15,6 +15,8 @@ Before you begin, make sure you have the following installed:
 
 **Important:** Each team member can create their own [Cloudflare account](https://dash.cloudflare.com/sign-up) for development and testing.
 
+**Crucially, do not use your `@telus.com` email address when signing up for this personal Cloudflare account.** Using your TELUS email will attempt to link your account to the TELUS organization's Cloudflare instance and enforce SSO. As your personal account won't be provisioned there, you will be unable to log in. Use a personal email address instead.
+
 #### Benefits of a Free Cloudflare Account:
 - **100,000 free requests per day** on the Workers free tier
 - **10 GB of free storage** with Cloudflare R2
@@ -25,6 +27,8 @@ Before you begin, make sure you have the following installed:
 - **No credit card required** for the free tier
 
 The free tier is more than sufficient for prototyping, development, and small-scale applications. This allows each developer to have their own isolated environment for testing without affecting shared resources.
+
+**Security Note:** Creating your own Cloudflare account is safe for experimentation and prototyping purposes. The starter kit uses TELUS OAuth token validation to secure the application, ensuring that only authenticated TELUS users can access your deployed prototypes. Your Cloudflare resources remain private to your account and are protected by the OAuth authentication layer.
 
 ### Windows Users
 
