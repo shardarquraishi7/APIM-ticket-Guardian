@@ -40,7 +40,7 @@ Then install Node.js within your WSL environment rather than on Windows directly
 ## Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/kevin-cfw-nextjs-starter-ui.git
+git clone https://github.com/telus/kevin-cfw-nextjs-starter-ui.git
 cd kevin-cfw-nextjs-starter-ui
 ```
 

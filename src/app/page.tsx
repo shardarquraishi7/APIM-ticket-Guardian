@@ -109,11 +109,23 @@ export default function Home() {
           
           <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
             <div className="mb-6">
+              <div className="mb-4 p-3 bg-blue-50 border-l-4 border-telus-purple rounded">
+                <p className="text-sm text-telus-grey">
+                  <strong>Prerequisites:</strong> Node.js 18+, Git, and a free{" "}
+                  <a href="https://dash.cloudflare.com/sign-up" className="text-telus-purple hover:underline" target="_blank" rel="noopener noreferrer">
+                    Cloudflare account
+                  </a>
+                  .{" "}
+                  <Link href="/docs/getting-started" className="text-telus-purple hover:underline">
+                    View detailed setup guide →
+                  </Link>
+                </p>
+              </div>
               <h3 className="text-xl font-bold text-telus-purple mb-3">Quick Setup</h3>
               <div className="bg-gray-100 p-4 rounded-md font-mono text-sm overflow-x-auto">
                 <pre>
 {`# Clone the repository
-git clone https://github.com/your-org/kevin-cfw-nextjs-starter-ui.git
+git clone https://github.com/telus/kevin-cfw-nextjs-starter-ui.git
 
 # Install dependencies
 npm install
