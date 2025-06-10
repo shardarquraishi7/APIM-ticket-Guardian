@@ -13,7 +13,7 @@ Description: Cloudflare Worker for Next.js with OAuth integration
 // Uncomment when implementing full signature validation
 // const TELUS_JWKS_URL = 'https://apigw-pr.telus.com/id/jwks';
 
-export default {
+const workerHandler = {
   async fetch(request, env) {
     const url = new URL(request.url);
     
@@ -75,6 +75,8 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+export default workerHandler;
 
 /**
  * Validate JWT token

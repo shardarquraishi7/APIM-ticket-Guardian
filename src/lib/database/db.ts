@@ -1,12 +1,14 @@
 /**
  * Cloudflare D1 Database Utilities
- * 
+ *
  * This file contains utility functions for interacting with Cloudflare D1 database.
  * In a production application, you would use the actual D1 client provided by Cloudflare.
- * 
+ *
  * For this starter kit, we're providing both mock implementations and the real D1 implementation
  * to demonstrate how to use D1 in your application.
  */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Type definitions for database models
 export interface User {
@@ -42,14 +44,34 @@ const mockProjects: Project[] = [
  * Database client class that provides methods for interacting with the database.
  * This implementation switches between mock data and real D1 based on the environment.
  */
+// We need to define a proper type for the D1 database
+interface D1Database {
+  prepare: (query: string) => {
+    bind: (...params: any[]) => {
+      all: () => Promise<{ results: any[] }>;
+      first: () => Promise<any>;
+      run: () => Promise<{ results: any[] }>;
+    };
+    all: () => Promise<{ results: any[] }>;
+    first: () => Promise<any>;
+    run: () => Promise<{ results: any[] }>;
+  };
+}
+
+// Define the Cloudflare environment type
+interface CloudflareEnv {
+  DB?: D1Database;
+  [key: string]: any;
+}
+
 export class Database {
-  private env: any;
+  private env: CloudflareEnv;
   private isD1Available: boolean;
 
-  constructor(env?: any) {
-    this.env = env;
+  constructor(env?: CloudflareEnv) {
+    this.env = env || {};
     // Check if D1 is available in the environment
-    this.isD1Available = env && env.DB;
+    this.isD1Available = !!(env && env.DB);
   }
 
   /**

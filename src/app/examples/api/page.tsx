@@ -195,7 +195,7 @@ export default function UsersList() {
           </div>
           <div className="card-body">
             <p className="mb-4">
-              This starter kit includes examples of Cloudflare D1 database integration. D1 is Cloudflare's SQL database
+              This starter kit includes examples of Cloudflare D1 database integration. D1 is Cloudflare&apos;s SQL database
               that runs at the edge, making it perfect for Cloudflare Workers applications.
             </p>
             

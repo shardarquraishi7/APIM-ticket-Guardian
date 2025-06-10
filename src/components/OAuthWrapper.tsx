@@ -41,75 +41,100 @@ export default function OAuthWrapper({ children }: { children: React.ReactNode }
     error: null
   })
 
+  // Check if we're running on localhost (development mode)
+  const isLocalhost = typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+     window.location.hostname === '127.0.0.1' ||
+     window.location.hostname.startsWith('192.168.') ||
+     window.location.hostname.endsWith('.local'))
+
   useEffect(() => {
-    checkAuth()
-  }, [])
-
-  async function checkAuth() {
-    try {
-      // Check for token in URL
-      const url = new URL(window.location.href)
-      const idToken = url.searchParams.get('id_token')
-      
-      if (idToken) {
-        const result = await validateToken(idToken)
-        if (result.valid) {
-          // Clean URL and store token
-          url.searchParams.delete('id_token')
-          window.history.replaceState({}, document.title, url.toString())
-          setAuthState({ 
-            loading: false, 
-            authenticated: true, 
-            user: result.payload, 
-            error: null 
-          })
-          return
-        } else {
-          // Invalid token from URL
-          url.searchParams.delete('id_token')
-          window.history.replaceState({}, document.title, url.toString())
-          
-          if (result.isExpired) {
-            // Expired token - redirect for fresh login
-            redirectToOAuth()
-            return
-          } else {
-            // Invalid token - show error
-            setAuthState({ 
-              loading: false, 
-              authenticated: false, 
-              user: null, 
-              error: 'Oops! We had trouble signing you in. This sometimes happens when there are temporary authentication issues. Please try refreshing the page or signing in again.' 
-            })
-            return
-          }
-        }
-      }
-
-      // Check stored token
-      const storedToken = getStoredToken()
-      if (storedToken) {
-        setAuthState({ 
-          loading: false, 
-          authenticated: true, 
-          user: storedToken.payload, 
-          error: null 
+    async function checkAuth() {
+      // Skip OAuth entirely for localhost development
+      if (isLocalhost) {
+        console.log('🚀 Development mode: Skipping OAuth authentication')
+        setAuthState({
+          loading: false,
+          authenticated: true,
+          user: {
+            sub: 'dev-user',
+            name: 'Development User',
+            email: 'dev@localhost',
+            exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
+          },
+          error: null
         })
         return
       }
+      try {
+        // Check for token in URL
+        const url = new URL(window.location.href)
+        const idToken = url.searchParams.get('id_token')
+        
+        if (idToken) {
+          const result = await validateToken(idToken)
+          if (result.valid) {
+            // Clean URL and store token
+            url.searchParams.delete('id_token')
+            window.history.replaceState({}, document.title, url.toString())
+            setAuthState({
+              loading: false,
+              authenticated: true,
+              user: result.payload,
+              error: null
+            })
+            return
+          } else {
+            // Invalid token from URL
+            url.searchParams.delete('id_token')
+            window.history.replaceState({}, document.title, url.toString())
+            
+            if (result.isExpired) {
+              // Expired token - redirect for fresh login
+              redirectToOAuth()
+              return
+            } else {
+              // Invalid token - show error
+              setAuthState({
+                loading: false,
+                authenticated: false,
+                user: null,
+                error: 'Oops! We had trouble signing you in. This sometimes happens when there are temporary authentication issues. Please try refreshing the page or signing in again.'
+              })
+              return
+            }
+          }
+        }
 
-      // No valid token - redirect to OAuth
-      redirectToOAuth()
-    } catch (error) {
-      console.error('Auth check failed:', error)
-      setAuthState({ 
-        loading: false, 
-        authenticated: false, 
-        user: null, 
-        error: 'Authentication error. Please try again.' 
-      })
+        // Check stored token
+        const storedToken = getStoredToken()
+        if (storedToken) {
+          setAuthState({
+            loading: false,
+            authenticated: true,
+            user: storedToken.payload,
+            error: null
+          })
+          return
+        }
+
+        // No valid token - redirect to OAuth
+        redirectToOAuth()
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        setAuthState({
+          loading: false,
+          authenticated: false,
+          user: null,
+          error: 'Authentication error. Please try again.'
+        })
+      }
     }
-  }
+
+    checkAuth()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // We intentionally want this to run only once on mount
+
 
   async function validateToken(token: string) {
     try {
@@ -257,6 +282,24 @@ export function useUser() {
   const [user, setUser] = useState<UserProfile | null>(null)
   
   useEffect(() => {
+    // Check if we're running on localhost (development mode)
+    const isLocalhost = typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' ||
+       window.location.hostname === '127.0.0.1' ||
+       window.location.hostname.startsWith('192.168.') ||
+       window.location.hostname.endsWith('.local'))
+
+    if (isLocalhost) {
+      // Return mock user data for development
+      setUser({
+        sub: 'dev-user',
+        name: 'Development User',
+        email: 'dev@localhost',
+        exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
+      })
+      return
+    }
+
     try {
       const userInfo = localStorage.getItem('oauth_user')
       if (userInfo) {

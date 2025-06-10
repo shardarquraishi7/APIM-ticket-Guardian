@@ -1,14 +1,12 @@
 name = "kevin-cfw-nextjs-starter-ui"
-main = "./.next/server/index.js"
-compatibility_date = "2023-12-01"
+main = ".open-next/worker.js"
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
-[build]
-command = "npm run build"
-
-[site]
-bucket = "./.next/static"
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
 [env.development]
 name = "kevin-cfw-nextjs-starter-ui-dev"
