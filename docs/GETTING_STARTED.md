@@ -68,7 +68,7 @@ If you want to use Cloudflare D1 for database storage, follow these steps:
 [[d1_databases]]
 binding = "DB"
 database_name = "starter_kit_db"
-database_id = "placeholder-id"
+database_id = "placeholder"
 ```
 
 2. Create a D1 database:

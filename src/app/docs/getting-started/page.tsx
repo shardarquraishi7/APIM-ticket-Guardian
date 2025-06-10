@@ -87,7 +87,7 @@ cd kevin-cfw-nextjs-starter-ui`}
 [[d1_databases]]
 binding = "DB"
 database_name = "starter_kit_db"
-database_id = "placeholder-id"`}
+database_id = "placeholder"`}
           </pre>
         </div>
 

@@ -64,7 +64,7 @@ export default function RootLayout({
         
         <footer className="footer mt-auto">
           <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
                 <div className="flex items-center mb-4">
                   <img
@@ -86,6 +86,25 @@ export default function RootLayout({
                   <li><Link href="/examples" className="hover:text-telus-light-green">Examples</Link></li>
                   <li><a href="https://developers.cloudflare.com/workers/" className="hover:text-telus-light-green" target="_blank" rel="noopener noreferrer">Cloudflare Workers</a></li>
                   <li><a href="https://nextjs.org/docs" className="hover:text-telus-light-green" target="_blank" rel="noopener noreferrer">Next.js Docs</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-4">Support</h3>
+                <ul className="space-y-2 text-sm">
+                  <li>
+                    <a href="mailto:kevin.ng@telus.com" className="hover:text-telus-light-green flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mr-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                      </svg>
+                      kevin.ng@telus.com
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://telus.enterprise.slack.com/archives/C08NL78AAPM" className="hover:text-telus-light-green flex items-center" target="_blank" rel="noopener noreferrer">
+                      <img src="/slack-logo-bw.png" alt="Slack" className="h-4 w-4 mr-2" />
+                      #tmp-simplify-deployment-experience
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
