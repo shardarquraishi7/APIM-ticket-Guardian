@@ -45,6 +45,7 @@ export default function RootLayout({
                   <li><Link href="/" className="hover:text-telus-light-green">Home</Link></li>
                   <li><Link href="/dashboard" className="hover:text-telus-light-green">Dashboard</Link></li>
                   <li><Link href="/examples" className="hover:text-telus-light-green">Examples</Link></li>
+                  <li><Link href="/chatbot" className="hover:text-telus-light-green">Chatbot</Link></li>
                 </ul>
               </nav>
               <div className="md:hidden">
@@ -83,6 +84,7 @@ export default function RootLayout({
                   <ul className="space-y-2 text-sm">
                     <li><Link href="/docs" className="hover:text-telus-light-green">Documentation</Link></li>
                     <li><Link href="/examples" className="hover:text-telus-light-green">Examples</Link></li>
+                    <li><Link href="/chatbot" className="hover:text-telus-light-green">Chatbot</Link></li>
                     <li><a href="https://developers.cloudflare.com/workers/" className="hover:text-telus-light-green" target="_blank" rel="noopener noreferrer">Cloudflare Workers</a></li>
                     <li><a href="https://nextjs.org/docs" className="hover:text-telus-light-green" target="_blank" rel="noopener noreferrer">Next.js Docs</a></li>
                   </ul>

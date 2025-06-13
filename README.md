@@ -16,6 +16,7 @@ A comprehensive Next.js starter kit optimized for Cloudflare Workers deployment,
 - **Dashboard Layout**: Responsive dashboard with data visualization examples
 - **File Upload**: File upload examples with Cloudflare R2 storage
 - **OAuth Authentication**: Integrated TELUS OAuth for secure authentication
+- **Chatbot Interface**: Ready-to-use chatbot with AI integration capabilities
 
 ## 📋 Quick Start
 
@@ -286,8 +287,61 @@ This starter kit includes several examples to help you get started:
 - **File Upload**: `/examples/upload`
 - **Authentication**: `/examples/auth`
 - **UI Components**: `/examples/components`
+- **Chatbot**: `/chatbot`
 
 Each example includes detailed documentation and code snippets.
+
+## 🤖 Chatbot
+
+The starter kit includes a fully functional chatbot implementation that demonstrates how to build a conversational interface with Next.js and React.
+
+### Chatbot Features
+
+- **Interactive UI**: Clean, responsive chat interface with user and bot messages
+- **Message History**: Maintains conversation history during the session
+- **Simple API**: Easy-to-understand API implementation for message handling
+- **Extensible Design**: Modular components that can be customized and extended
+
+### AI Integration
+
+The chatbot comes with built-in support for AI integration:
+
+1. **Setup AI Integration**:
+
+```bash
+npm run setup:chatbot-ai
+```
+
+This script will:
+- Install the OpenAI SDK
+- Add the necessary environment variables
+- Update the database schema (optional)
+- Replace the simple rule-based system with AI-powered responses
+
+2. **Enhance with Your Own AI Logic**:
+
+The chatbot is designed to be easily integrated with AI services like OpenAI or Azure OpenAI. See the `docs/ENHANCING_CHATBOT.md` file for detailed instructions on:
+
+- Integrating with OpenAI's GPT models
+- Adding database persistence for conversations
+- Implementing advanced features like message analysis and rich responses
+- Deployment considerations for production use
+
+### How to Use
+
+1. **Access the Chatbot**: Navigate to `/chatbot` to see the chatbot in action
+2. **Send Messages**: Type in the input field and press Enter or click the send button
+3. **View Responses**: See the bot's responses in real-time
+
+### Customization
+
+The chatbot components are located in `src/components/chatbot/` and can be customized to fit your needs:
+
+- `ChatContainer.tsx`: The main container component
+- `ChatMessage.tsx`: Individual message component
+- `ChatInput.tsx`: User input component
+
+The API route is located in `src/app/api/chatbot/route.ts` and can be modified to integrate with your preferred AI service.
 
 ## 🔒 Authentication
 
