@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+
+@theme {
+  --font-*: initial;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-purple-50: #faf6fe;
+  --color-purple-100: #f2ebfc;
+  --color-purple-200: #e7dbf9;
+  --color-purple-300: #d5bff3;
+  --color-purple-400: #bc96ea;
+  --color-purple-500: #a16ddf;
+  --color-purple-600: #8b4ecf;
+  --color-purple-700: #753bb5;
+  --color-purple-800: #643594;
+  --color-purple-900: #4b286d;
+  --color-purple-950: #361556;
+
+  --color-green-50: #f5ffe4;
+  --color-green-100: #e8ffc5;
+  --color-green-200: #d1ff92;
+  --color-green-300: #b1ff53;
+  --color-green-400: #91fb20;
+  --color-green-500: #66cc00;
+  --color-green-600: #55b500;
+  --color-green-700: #418902;
+  --color-green-800: #366c08;
+  --color-green-900: #2f5b0c;
+  --color-green-950: #153300;
+}
+
+@theme inline {
+  --color-gray-50: var(--color-neutral-50);
+  --color-gray-100: var(--color-neutral-100);
+  --color-gray-200: var(--color-neutral-200);
+  --color-gray-300: var(--color-neutral-300);
+  --color-gray-400: var(--color-neutral-400);
+  --color-gray-500: var(--color-neutral-500);
+  --color-gray-600: var(--color-neutral-600);
+  --color-gray-700: var(--color-neutral-700);
+  --color-gray-800: var(--color-neutral-800);
+  --color-gray-900: var(--color-neutral-900);
+  --color-gray-950: var(--color-neutral-950);
+}
+
+:root {
+  --background: linear-gradient(135deg, #000000, #1a0a2e);
+  --foreground: var(--color-gray-50);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: linear-gradient(135deg, #000000, #1a0a2e);
+    --foreground: var(--color-gray-50);
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  max-height: 100vh;
+  max-width: 100vw;
+  box-sizing: border-box;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Custom animations */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.animate-shine {
+  animation: shine 3s infinite linear;
+}

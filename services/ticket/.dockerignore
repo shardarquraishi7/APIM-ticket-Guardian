@@ -1,0 +1,11 @@
+.git
+.gitignore
+.next
+.platform
+coverage
+Dockerfile
+docker-compose.e2e.yaml
+Jenkinsfile
+node_modules
+openshift
+README.md

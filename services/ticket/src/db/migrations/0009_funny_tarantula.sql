@@ -1,0 +1,1 @@
+ALTER TABLE "feedback" ADD COLUMN "user_id" text NOT NULL;

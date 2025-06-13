@@ -1,0 +1,59 @@
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: sia-copilot
+  annotations: {}
+  labels: {}
+description: CICD deploy pipeline
+serialPipeline:
+  stages:
+    - targetId: st
+      profiles:
+        - st
+    - targetId: pr
+      profiles:
+        - pr
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: st
+  annotations: {}
+  labels: {}
+description: Staging environment
+requireApproval: false
+gke:
+  cluster: projects/cdo-gke-private-np-1a8686/locations/northamerica-northeast1/clusters/private-na-ne1-001
+  internalIp: true
+executionConfigs:
+  - privatePool:
+      workerPool: projects/cdo-cloud-build-pools-np-1c2f/locations/northamerica-northeast1/workerPools/private-pool-e2-standard-8
+      serviceAccount: cicd-service-account@cdo-sia-copilot-np-ccb114.iam.gserviceaccount.com
+    usages:
+      - DEPLOY
+  - defaultPool:
+      serviceAccount: cicd-service-account@cdo-sia-copilot-np-ccb114.iam.gserviceaccount.com
+    usages:
+      - RENDER
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: pr
+  annotations: {}
+  labels: {}
+description: Production environment
+requireApproval: false
+gke:
+  cluster: projects/cdo-gke-private-pr-7712d7/locations/northamerica-northeast1/clusters/private-na-ne1-001
+  internalIp: true
+executionConfigs:
+  - privatePool:
+      workerPool: projects/cdo-cloud-build-pools-np-1c2f/locations/northamerica-northeast1/workerPools/private-pool-e2-standard-8
+      serviceAccount: cicd-service-account@cdo-sia-copilot-np-ccb114.iam.gserviceaccount.com
+    usages:
+      - DEPLOY
+  - defaultPool:
+      serviceAccount: cicd-service-account@cdo-sia-copilot-np-ccb114.iam.gserviceaccount.com
+    usages:
+      - RENDER

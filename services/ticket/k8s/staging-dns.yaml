@@ -1,0 +1,15 @@
+apiVersion: dns.cnrm.cloud.google.com/v1beta1
+kind: DNSRecordSet
+metadata:
+  name: sia-copilot-st
+  namespace: sia-copilot
+  annotations:
+    cnrm.cloud.google.com/project-id: cloudapps-dns-f6a91c11
+spec:
+  name: 'sia-copilot-st.cloudapps.telus.com.'
+  type: 'CNAME'
+  ttl: 300
+  managedZoneRef:
+    external: 'telus-cloud-apps'
+  rrdatas:
+    - 'kong-workforce-gateway-np.cloudapps.telus.com.'

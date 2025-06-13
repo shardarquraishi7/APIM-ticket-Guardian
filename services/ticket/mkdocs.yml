@@ -1,0 +1,18 @@
+site_name: sia-copilot
+site_description: A Web App Start Kit Next.Js app created with @telus/create-web-app.
+
+nav:
+  - Introduction: 'README.md'
+
+plugins:
+  - techdocs-core
+  - same-dir
+  - exclude:
+      regex:
+        - node_modules/*
+        - src
+        - cypress
+        - openshift
+        - public
+
+docs_dir: .

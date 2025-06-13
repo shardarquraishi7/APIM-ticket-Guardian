@@ -1,0 +1,167 @@
+{
+  "tickets": [
+    {
+      "id": "TICKET-1001",
+      "title": "API Gateway 500 Error on /users Endpoint",
+      "description": "Our application is receiving 500 errors when calling the /users endpoint. This is happening intermittently, approximately 10% of requests fail.",
+      "status": "open",
+      "priority": "p1",
+      "assignee": "john.smith@telus.com",
+      "reporter": "dev.team@client.com",
+      "createdAt": "2025-06-10T14:30:00Z",
+      "updatedAt": "2025-06-10T15:45:00Z",
+      "dueDate": "2025-06-11T14:30:00Z",
+      "tags": ["api-gateway", "500-error", "intermittent"]
+    },
+    {
+      "id": "TICKET-1002",
+      "title": "Rate Limit Exceeded Too Quickly",
+      "description": "We're hitting rate limits on the /transactions endpoint much sooner than expected. Documentation states 1000 requests per minute, but we're getting throttled at around 600.",
+      "status": "in-progress",
+      "priority": "p2",
+      "assignee": "sarah.johnson@telus.com",
+      "reporter": "api.consumer@partner.com",
+      "createdAt": "2025-06-09T10:15:00Z",
+      "updatedAt": "2025-06-10T09:30:00Z",
+      "dueDate": "2025-06-11T10:15:00Z",
+      "tags": ["rate-limiting", "throttling", "transactions-api"]
+    },
+    {
+      "id": "TICKET-1003",
+      "title": "Authentication Token Expiring Too Quickly",
+      "description": "OAuth tokens are expiring after 10 minutes instead of the documented 60 minutes. This is causing frequent re-authentication and disrupting our service.",
+      "status": "resolved",
+      "priority": "p2",
+      "assignee": "mike.wilson@telus.com",
+      "reporter": "integration.team@customer.org",
+      "createdAt": "2025-06-08T16:45:00Z",
+      "updatedAt": "2025-06-10T11:20:00Z",
+      "dueDate": "2025-06-10T16:45:00Z",
+      "tags": ["oauth", "authentication", "token-expiry"]
+    },
+    {
+      "id": "TICKET-1004",
+      "title": "Missing Fields in API Response",
+      "description": "The /products endpoint is not returning the 'inventory_count' field that is documented in the API specification.",
+      "status": "in-progress",
+      "priority": "p3",
+      "assignee": "lisa.chen@telus.com",
+      "reporter": "product.team@retailer.com",
+      "createdAt": "2025-06-07T09:30:00Z",
+      "updatedAt": "2025-06-09T14:15:00Z",
+      "dueDate": "2025-06-13T09:30:00Z",
+      "tags": ["products-api", "missing-field", "response-format"]
+    },
+    {
+      "id": "TICKET-1005",
+      "title": "API Documentation Inconsistency",
+      "description": "The documentation for the /orders endpoint lists different required fields than what the API actually enforces.",
+      "status": "open",
+      "priority": "p4",
+      "assignee": null,
+      "reporter": "new.developer@startup.io",
+      "createdAt": "2025-06-10T11:00:00Z",
+      "updatedAt": "2025-06-10T11:00:00Z",
+      "dueDate": "2025-06-17T11:00:00Z",
+      "tags": ["documentation", "orders-api", "validation"]
+    }
+  ],
+  "comments": [
+    {
+      "id": "COMMENT-2001",
+      "ticketId": "TICKET-1001",
+      "content": "I've checked the logs and can see the 500 errors. They seem to be related to a database connection issue. Working on a fix now.",
+      "author": "john.smith@telus.com",
+      "createdAt": "2025-06-10T15:45:00Z",
+      "isInternal": true
+    },
+    {
+      "id": "COMMENT-2002",
+      "ticketId": "TICKET-1001",
+      "content": "We've identified the issue as a connection pool problem. We're deploying a fix within the next hour.",
+      "author": "john.smith@telus.com",
+      "createdAt": "2025-06-10T16:30:00Z",
+      "isInternal": false
+    },
+    {
+      "id": "COMMENT-2003",
+      "ticketId": "TICKET-1002",
+      "content": "I've confirmed the rate limit issue. It appears our rate limiting service is counting batch requests incorrectly. Each item in a batch is being counted as a separate request.",
+      "author": "sarah.johnson@telus.com",
+      "createdAt": "2025-06-10T09:30:00Z",
+      "isInternal": false
+    },
+    {
+      "id": "COMMENT-2004",
+      "ticketId": "TICKET-1003",
+      "content": "Fixed the token expiration issue. It was caused by a configuration error in the latest deployment. Tokens should now correctly expire after 60 minutes.",
+      "author": "mike.wilson@telus.com",
+      "createdAt": "2025-06-10T11:20:00Z",
+      "isInternal": false
+    },
+    {
+      "id": "COMMENT-2005",
+      "ticketId": "TICKET-1004",
+      "content": "I've reproduced the issue. The 'inventory_count' field is being filtered out by our API gateway. Working on a configuration fix.",
+      "author": "lisa.chen@telus.com",
+      "createdAt": "2025-06-09T14:15:00Z",
+      "isInternal": true
+    }
+  ],
+  "sla_definitions": [
+    {
+      "priority": "p1",
+      "responseTime": "15 minutes",
+      "resolutionTime": "2 hours",
+      "description": "Critical issue affecting multiple customers or preventing core business functions"
+    },
+    {
+      "priority": "p2",
+      "responseTime": "30 minutes",
+      "resolutionTime": "4 hours",
+      "description": "High impact issue affecting a single customer or with a workaround available"
+    },
+    {
+      "priority": "p3",
+      "responseTime": "2 hours",
+      "resolutionTime": "24 hours",
+      "description": "Medium impact issue affecting non-critical functionality"
+    },
+    {
+      "priority": "p4",
+      "responseTime": "8 hours",
+      "resolutionTime": "72 hours",
+      "description": "Low impact issue, general questions, or enhancement requests"
+    }
+  ],
+  "api_endpoints": [
+    {
+      "path": "/users",
+      "methods": ["GET", "POST", "PUT", "DELETE"],
+      "description": "Manage user accounts and profiles",
+      "rate_limit": "1000 requests per minute",
+      "authentication": "OAuth 2.0"
+    },
+    {
+      "path": "/transactions",
+      "methods": ["GET", "POST"],
+      "description": "Process and retrieve transaction information",
+      "rate_limit": "1000 requests per minute",
+      "authentication": "OAuth 2.0"
+    },
+    {
+      "path": "/products",
+      "methods": ["GET", "POST", "PUT", "DELETE"],
+      "description": "Manage product catalog and inventory",
+      "rate_limit": "800 requests per minute",
+      "authentication": "OAuth 2.0"
+    },
+    {
+      "path": "/orders",
+      "methods": ["GET", "POST", "PUT"],
+      "description": "Create and manage customer orders",
+      "rate_limit": "500 requests per minute",
+      "authentication": "OAuth 2.0"
+    }
+  ]
+}

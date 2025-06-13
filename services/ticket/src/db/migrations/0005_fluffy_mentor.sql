@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "repo_id_path_idx" ON "repo_documents" USING btree ("repo_id","path");

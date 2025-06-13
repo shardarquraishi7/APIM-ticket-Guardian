@@ -1,0 +1,22 @@
+{
+  "projectName": "sia-copilot",
+  "templateVersion": "12.0.0",
+  "team": "web-app-starter-kits",
+  "language": "ts",
+  "template": "core",
+  "extensions": {
+    "alloy-analytics": "N/A",
+    "deploy-cdo": "installed",
+    "deploy-gke": "installed",
+    "global-elements": "installed",
+    "next-seo": "N/A",
+    "next-unleash": "N/A",
+    "redux": "N/A",
+    "UDS": "installed",
+    "cache-client": "N/A",
+    "contentful": "N/A",
+    "locale-middleware": "installed",
+    "styled-components": "installed",
+    "localized-document": "installed"
+  }
+}

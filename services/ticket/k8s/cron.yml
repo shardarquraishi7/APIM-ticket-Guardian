@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    name: sia-copilot-cron
+    annotations:
+      environment: np
+      team: identity
+      app: sia-copilot
+spec:
+  schedule: "0 */4 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 5
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            cluster-autoscaler.kubernetes.io/safe-to-evict: 'true'
+        spec:
+          terminationGracePeriodSeconds: 5
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            fsGroup: 1001
+            supplementalGroups:
+              - 1001
+          restartPolicy: OnFailure
+          containers:
+            - name: embed-docs-cronjob
+              image: docker.io/curlimages/curl
+              imagePullPolicy: IfNotPresent
+              command:
+              - /bin/sh
+              - -c
+              - curl -s -f -X POST -H "Content-Type:application/json" http://sia-copilot-st.sia-copilot.svc.cluster.local:8080/api/embed-docs
+              resources:
+                limits:
+                  cpu: 500m
+                  memory: 1024Mi
+                requests:
+                  cpu: 250m
+                  memory: 1024Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - NET_RAW
+                runAsGroup: 1001
+                runAsUser: 1001

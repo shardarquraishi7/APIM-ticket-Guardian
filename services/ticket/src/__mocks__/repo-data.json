@@ -1,0 +1,43 @@
+{
+  "id": 1,
+  "repo": "test-repo",
+  "docs": [
+    { "path": "/docs/file1.md", "sha": "abc123" },
+    { "path": "/docs/file2.md", "sha": "def456" },
+    { "path": "/docs/file3.md", "sha": "ghi789" }
+  ],
+  "incomingFiles": [
+    {
+      "path": "/docs/file1.md",
+      "sha": "abc123",
+      "name": "file1.md",
+      "size": 1000,
+      "url": "https://api.github.com/repos/telus/test-repo/contents/docs/file1.md",
+      "html_url": "https://github.com/telus/test-repo/blob/main/docs/file1.md",
+      "git_url": "https://api.github.com/repos/telus/test-repo/git/blobs/abc123",
+      "download_url": "https://raw.githubusercontent.com/telus/test-repo/main/docs/file1.md",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/telus/test-repo/contents/docs/file1.md",
+        "git": "https://api.github.com/repos/telus/test-repo/git/blobs/abc123",
+        "html": "https://github.com/telus/test-repo/blob/main/docs/file1.md"
+      }
+    },
+    {
+      "path": "/docs/file2.md",
+      "sha": "def456",
+      "name": "file2.md",
+      "size": 1000,
+      "url": "https://api.github.com/repos/telus/test-repo/contents/docs/file2.md",
+      "html_url": "https://github.com/telus/test-repo/blob/main/docs/file2.md",
+      "git_url": "https://api.github.com/repos/telus/test-repo/git/blobs/def456",
+      "download_url": "https://raw.githubusercontent.com/telus/test-repo/main/docs/file2.md",
+      "type": "file",
+      "_links": {
+        "self": "https://api.github.com/repos/telus/test-repo/contents/docs/file2.md",
+        "git": "https://api.github.com/repos/telus/test-repo/git/blobs/def456",
+        "html": "https://github.com/telus/test-repo/blob/main/docs/file2.md"
+      }
+    }
+  ]
+}

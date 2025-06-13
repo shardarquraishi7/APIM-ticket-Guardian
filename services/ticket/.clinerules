@@ -1,0 +1,76 @@
+# NextJS Configuration & Testing Guidelines
+
+# Routing Configuration
+
+- Use Pages router as primary routing solution
+- Place page components in src/pages directory
+- Follow file-based routing convention (e.g., src/pages/about.tsx for /about route)
+- Use dynamic routes with [param].tsx naming
+- Implement getStaticProps/getServerSideProps for data fetching
+- Use next/link for client-side navigation
+- Place API routes in src/app/api directory
+- Use middleware.ts in src root for route middleware
+- Handle 404 with src/pages/404.tsx
+- Handle 500 with src/pages/500.tsx
+- Place shared layouts in src/components/layouts
+
+# Component & Code Style
+
+- Use src directory structure
+- Use kebab-case for component files (e.g., my-component.tsx)
+- Implement loading and error states for data fetching components
+- Use semantic HTML elements where possible
+- Implement error handling and logging
+- Use functional React components
+- Focus on code readability
+
+# Environment & Configuration
+
+- Use .env.local for environment variables
+- Maintain .env.example with placeholders
+- Use TypeScript for all components and files
+
+# Testing Configuration
+
+- Use Vitest for all tests
+- Place tests next to implementation files with .spec.ts(x) extension
+- Mock next/router using vi.mock('next/router')
+- Mock next/navigation for any navigation hooks
+- Mock getStaticProps/getServerSideProps in page tests
+- Use vi.mock() to mock all external module dependencies
+- Mock API responses in api route tests
+- Use beforeEach to reset mocks between tests
+- Mock fetch calls using vi.spyOn(global, 'fetch')
+- Use @/utils/test-utils for component testing
+- Mock context providers in test setup
+- Create **mocks** directory for common mock implementations
+- Use vi.hoisted() for module-level mocks
+
+# Database Testing Patterns
+
+- Mock database operations using vi.mock('@/db')
+- Create chainable mock objects for database queries
+- Mock database responses with appropriate test data
+- Test both success and error cases for database operations
+- Use vi.clearAllMocks() in beforeEach to reset mock state between tests
+
+# Component Testing Patterns
+
+- Use render from '@testing-library/react' for component rendering
+- Use screen from '@testing-library/react' for querying elements
+- Use userEvent from '@testing-library/user-event' for simulating user interactions
+- Test component rendering with default props
+- Test component rendering with custom props
+- Test component class names and styling
+- Test component event handling
+- Test component ref forwarding when applicable
+- Test component accessibility attributes
+
+# Hook Testing Patterns
+
+- Use renderHook from '@testing-library/react' for testing hooks
+- Mock SWR responses for data fetching hooks
+- Test both success and error states
+- Test loading states when applicable
+- Test cleanup functions to prevent memory leaks
+- Test callback functions returned by hooks

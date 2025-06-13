@@ -1,0 +1,290 @@
+{
+  "info": {
+    "title": "API Ticketing Support System",
+    "description": "API for managing and tracking API-related support tickets",
+    "version": "1.0.0",
+    "contact": {
+      "name": "TELUS API Support Team",
+      "email": "api-support@telus.com",
+      "url": "https://telus.com/api-support"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.telus.com/ticketing/v1",
+      "description": "Production server"
+    },
+    {
+      "url": "https://api-staging.telus.com/ticketing/v1",
+      "description": "Staging server"
+    }
+  ],
+  "endpoints": [
+    {
+      "path": "/tickets",
+      "method": "GET",
+      "summary": "List all tickets",
+      "description": "Returns a list of tickets based on the provided filters",
+      "parameters": [
+        {
+          "name": "status",
+          "in": "query",
+          "description": "Filter tickets by status",
+          "type": "string",
+          "enum": ["open", "in-progress", "resolved", "closed"]
+        },
+        {
+          "name": "priority",
+          "in": "query",
+          "description": "Filter tickets by priority",
+          "type": "string",
+          "enum": ["p1", "p2", "p3", "p4"]
+        }
+      ]
+    },
+    {
+      "path": "/tickets",
+      "method": "POST",
+      "summary": "Create a new ticket",
+      "description": "Creates a new API support ticket",
+      "requestBody": {
+        "title": "string",
+        "description": "string",
+        "priority": "string"
+      }
+    },
+    {
+      "path": "/tickets/{ticketId}",
+      "method": "GET",
+      "summary": "Get ticket by ID",
+      "description": "Returns a single ticket by ID",
+      "parameters": [
+        {
+          "name": "ticketId",
+          "in": "path",
+          "description": "ID of the ticket to retrieve",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "path": "/tickets/{ticketId}",
+      "method": "PUT",
+      "summary": "Update ticket",
+      "description": "Updates an existing ticket",
+      "parameters": [
+        {
+          "name": "ticketId",
+          "in": "path",
+          "description": "ID of the ticket to update",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "title": "string",
+        "description": "string",
+        "status": "string",
+        "priority": "string"
+      }
+    },
+    {
+      "path": "/tickets/{ticketId}/comments",
+      "method": "GET",
+      "summary": "Get ticket comments",
+      "description": "Returns all comments for a ticket",
+      "parameters": [
+        {
+          "name": "ticketId",
+          "in": "path",
+          "description": "ID of the ticket",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "path": "/tickets/{ticketId}/comments",
+      "method": "POST",
+      "summary": "Add comment to ticket",
+      "description": "Adds a new comment to a ticket",
+      "parameters": [
+        {
+          "name": "ticketId",
+          "in": "path",
+          "description": "ID of the ticket",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "content": "string"
+      }
+    },
+    {
+      "path": "/tickets/{ticketId}/escalate",
+      "method": "POST",
+      "summary": "Escalate ticket",
+      "description": "Escalates a ticket to a higher support tier",
+      "parameters": [
+        {
+          "name": "ticketId",
+          "in": "path",
+          "description": "ID of the ticket to escalate",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "requestBody": {
+        "reason": "string",
+        "targetTier": "string"
+      }
+    },
+    {
+      "path": "/sla",
+      "method": "GET",
+      "summary": "Get SLA information",
+      "description": "Returns information about service level agreements"
+    }
+  ],
+  "models": {
+    "Ticket": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ticket"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the ticket"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the issue"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["open", "in-progress", "resolved", "closed"],
+          "description": "Current status of the ticket"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["p1", "p2", "p3", "p4"],
+          "description": "Priority level of the ticket"
+        },
+        "assignee": {
+          "type": "string",
+          "description": "User assigned to the ticket"
+        },
+        "reporter": {
+          "type": "string",
+          "description": "User who reported the ticket"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the ticket was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the ticket was last updated"
+        }
+      }
+    },
+    "Comment": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the comment"
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the comment"
+        },
+        "author": {
+          "type": "string",
+          "description": "Author of the comment"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the comment was created"
+        },
+        "isInternal": {
+          "type": "boolean",
+          "description": "Whether the comment is internal or visible to the reporter"
+        }
+      }
+    },
+    "SLA": {
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": ["p1", "p2", "p3", "p4"],
+          "description": "Priority level"
+        },
+        "responseTime": {
+          "type": "string",
+          "description": "Expected initial response time"
+        },
+        "resolutionTime": {
+          "type": "string",
+          "description": "Expected resolution time"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the SLA"
+        }
+      }
+    }
+  },
+  "errors": [
+    {
+      "code": "400",
+      "name": "BadRequest",
+      "description": "The request could not be understood due to malformed syntax"
+    },
+    {
+      "code": "401",
+      "name": "Unauthorized",
+      "description": "Authentication is required and has failed or not been provided"
+    },
+    {
+      "code": "403",
+      "name": "Forbidden",
+      "description": "The server understood the request but refuses to authorize it"
+    },
+    {
+      "code": "404",
+      "name": "NotFound",
+      "description": "The requested resource could not be found"
+    },
+    {
+      "code": "429",
+      "name": "TooManyRequests",
+      "description": "The user has sent too many requests in a given amount of time"
+    },
+    {
+      "code": "500",
+      "name": "InternalServerError",
+      "description": "The server encountered an unexpected condition"
+    }
+  ],
+  "authentication": {
+    "type": "OAuth2",
+    "description": "OAuth 2.0 authentication is required for all API endpoints",
+    "flows": {
+      "clientCredentials": {
+        "tokenUrl": "https://auth.telus.com/oauth/token",
+        "scopes": {
+          "tickets:read": "Read tickets",
+          "tickets:write": "Create and update tickets",
+          "comments:read": "Read comments",
+          "comments:write": "Create comments"
+        }
+      }
+    }
+  }
+}

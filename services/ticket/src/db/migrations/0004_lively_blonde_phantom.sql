@@ -1,0 +1,1 @@
+ALTER TABLE "repos" ADD CONSTRAINT "repos_name_unique" UNIQUE("name");

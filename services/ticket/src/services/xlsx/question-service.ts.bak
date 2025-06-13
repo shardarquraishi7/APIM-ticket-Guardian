@@ -1,0 +1,424 @@
+import { createLogger } from '@/lib/logger';
+import { openai } from '@/lib/openai';
+import { QuestionData } from '@/services/xlsx/xlsx-service';
+import { Question, AnswerMap, Section } from '@/types';
+import { 
+  questions as depQuestions, 
+  anchorQuestions as depAnchorQuestions, 
+  applyInferenceRules,
+  getQuestionById
+} from '@/ai/prompts/questions';
+
+const logger = createLogger('question-service');
+
+/**
+ * Service for handling DEP questions and answers
+ */
+class QuestionService {
+  /**
+   * Select anchor questions from the full list of questions
+   * @param questions - All questions from the DEP file
+   * @param existingAnswers - Map of existing answers
+   * @param maxQuestions - Maximum number of questions to select
+   * @returns Array of selected anchor questions
+   */
+  selectAnchorQuestions(
+    questions: QuestionData[],
+    existingAnswers: Map<string, string> | [string, string][],
+    maxQuestions: number = 8
+  ): QuestionData[] {
+    try {
+      logger.info(`Selecting up to ${maxQuestions} anchor questions from ${questions.length} total questions`);
+      
+      // Convert to Map if it's an array
+      const answersMap = existingAnswers instanceof Map ? 
+        existingAnswers : new Map(existingAnswers);
+      
+      // Filter out questions that already have answers
+      const unansweredQuestions = questions.filter(q => !answersMap.has(q.id) && (!q.answer || q.answer.trim() === ''));
+      logger.info(`Found ${unansweredQuestions.length} unanswered questions`);
+      
+      // If all questions are answered, return empty array
+      if (unansweredQuestions.length === 0) {
+        return [];
+      }
+      
+      // If there are fewer unanswered questions than maxQuestions, return all of them
+      if (unansweredQuestions.length <= maxQuestions) {
+        logger.info(`Returning all ${unansweredQuestions.length} unanswered questions as anchor questions`);
+        return unansweredQuestions;
+      }
+      
+      // Use anchor questions from our knowledge base
+      const keyAnchorQuestionIds = depAnchorQuestions.map((q: { id: string }) => q.id);
+      
+      // First, select key anchor questions that are unanswered
+      const keyAnchorQuestions = unansweredQuestions.filter((q: QuestionData) => 
+        keyAnchorQuestionIds.includes(q.id)
+      );
+      
+      // If we have enough key anchor questions, return them
+      if (keyAnchorQuestions.length >= maxQuestions) {
+        logger.info(`Selected ${maxQuestions} key anchor questions`);
+        return keyAnchorQuestions.slice(0, maxQuestions);
+      }
+      
+      // If we need more questions, select from other sections
+      const selectedAnchorQuestions = [...keyAnchorQuestions];
+      
+      // Group remaining unanswered questions by section
+      const remainingQuestions = unansweredQuestions.filter(q => 
+        !keyAnchorQuestionIds.includes(q.id)
+      );
+      
+      // Group questions by section (first part of the ID before the dot)
+      const sectionGroups = new Map<string, QuestionData[]>();
+      remainingQuestions.forEach(q => {
+        const sectionMatch = q.id.match(/^(\d+)\./);
+        const sectionId = sectionMatch ? sectionMatch[1] : 'unknown';
+        
+        if (!sectionGroups.has(sectionId)) {
+          sectionGroups.set(sectionId, []);
+        }
+        sectionGroups.get(sectionId)!.push(q);
+      });
+      
+      // Sort sections by size (largest first)
+      const sortedSections = Array.from(sectionGroups.entries())
+        .sort((a, b) => b[1].length - a[1].length);
+      
+      // Calculate how many more questions we need
+      const remainingSlots = maxQuestions - selectedAnchorQuestions.length;
+      
+      // Calculate how many questions to take from each section
+      const totalSections = sortedSections.length;
+      const questionsPerSection = Math.max(1, Math.floor(remainingSlots / totalSections));
+      
+      // Take questions from each section
+      for (const [sectionId, sectionQuestions] of sortedSections) {
+        if (selectedAnchorQuestions.length >= maxQuestions) break;
+        
+        // Take the first N questions from this section
+        const questionsToTake = Math.min(
+          questionsPerSection,
+          sectionQuestions.length,
+          maxQuestions - selectedAnchorQuestions.length
+        );
+        
+        // Select questions with strategic importance
+        // For now, we'll just take the first N questions
+        const selectedQuestions = sectionQuestions.slice(0, questionsToTake);
+        selectedAnchorQuestions.push(...selectedQuestions);
+        
+        logger.info(`Selected ${selectedQuestions.length} questions from section ${sectionId}`);
+      }
+      
+      logger.info(`Selected ${selectedAnchorQuestions.length} anchor questions in total`);
+      return selectedAnchorQuestions;
+    } catch (error: any) {
+      logger.error('Error selecting anchor questions:', error);
+      throw new Error(`Failed to select anchor questions: ${error.message}`);
+    }
+  }
+
+  /**
+   * Predict answers for all questions based on anchor answers
+   * @param questions - All questions from the DEP file
+   * @param anchorAnswers - Map or array of anchor question IDs to their answers
+   * @returns Array of questions with predicted answers
+   */
+  predictFromAnchors(
+    questions: QuestionData[],
+    anchorAnswers: Map<string, string> | [string, string][]
+  ): QuestionData[] {
+    try {
+      // Convert to Map if it's an array
+      const answerMap = anchorAnswers instanceof Map ? 
+        anchorAnswers : new Map(anchorAnswers);
+      
+      logger.info(`Predicting answers for ${questions.length} questions based on ${answerMap.size} anchor answers`);
+      
+      // Create a copy of the questions to avoid modifying the original
+      const predictedQuestions = [...questions];
+      
+      // First, add the anchor answers to the predicted questions
+      for (const [id, answer] of answerMap.entries()) {
+        const questionIndex = predictedQuestions.findIndex(q => q.id === id);
+        if (questionIndex !== -1) {
+          predictedQuestions[questionIndex] = {
+            ...predictedQuestions[questionIndex],
+            answer,
+            confidence: 1 // Maximum confidence for user-provided answers
+          };
+        }
+      }
+      
+      // For questions without answers, predict based on patterns
+      const unansweredQuestions = predictedQuestions.filter(q => !q.answer || q.answer.trim() === '');
+      
+      if (unansweredQuestions.length === 0) {
+        return predictedQuestions;
+      }
+      
+      logger.info(`Predicting answers for ${unansweredQuestions.length} remaining questions`);
+      
+      // Group questions by section for more efficient prediction
+      const sectionGroups = new Map<string, QuestionData[]>();
+      unansweredQuestions.forEach(q => {
+        const sectionId = q.id.split('.')[0];
+        if (!sectionGroups.has(sectionId)) {
+          sectionGroups.set(sectionId, []);
+        }
+        sectionGroups.get(sectionId)!.push(q);
+      });
+      
+      // Process each section
+      for (const [sectionId, sectionQuestions] of sectionGroups.entries()) {
+        logger.info(`Processing ${sectionQuestions.length} questions in section ${sectionId}`);
+        
+        // Find anchor answers in this section
+        const sectionAnchorAnswers = new Map<string, string>();
+        for (const [id, answer] of answerMap.entries()) {
+          if (typeof id === 'string' && id.startsWith(sectionId + '.')) {
+            sectionAnchorAnswers.set(id, answer);
+          }
+        }
+        
+        // If we have anchor answers in this section, use them to predict
+        if (sectionAnchorAnswers.size > 0) {
+          // Simple pattern-based prediction for now
+          // In a real implementation, this would use more sophisticated ML techniques
+          for (const question of sectionQuestions) {
+            // Find the most similar anchor question
+            let bestMatch: string | null = null;
+            let highestSimilarity = 0;
+            
+            for (const [anchorId, anchorAnswer] of sectionAnchorAnswers.entries()) {
+              const anchorQuestion = predictedQuestions.find(q => q.id === anchorId);
+              if (anchorQuestion) {
+                const similarity = this.calculateSimilarity(question.question, anchorQuestion.question);
+                if (similarity > highestSimilarity) {
+                  highestSimilarity = similarity;
+                  bestMatch = anchorId;
+                }
+              }
+            }
+            
+            if (bestMatch && highestSimilarity > 0.5) {
+              const anchorAnswer = sectionAnchorAnswers.get(bestMatch)!;
+              const questionIndex = predictedQuestions.findIndex(q => q.id === question.id);
+              
+              if (questionIndex !== -1) {
+                predictedQuestions[questionIndex] = {
+                  ...predictedQuestions[questionIndex],
+                  answer: anchorAnswer,
+                  confidence: highestSimilarity
+                };
+              }
+            }
+          }
+        }
+      }
+      
+      // Convert answerMap to AnswerMap format for our new Question objects
+      const typedAnswers: AnswerMap = {};
+      answerMap.forEach((value, key) => {
+        typedAnswers[key] = value;
+      });
+      
+      // Apply inference rules using our new Question objects
+      const inferredAnswers = applyInferenceRules(depQuestions, typedAnswers);
+      logger.info(`Applied inference rules, got ${Object.keys(inferredAnswers).length - Object.keys(typedAnswers).length} inferred answers`);
+      
+      // Apply inferred answers to our questions
+      for (const [id, answer] of Object.entries(inferredAnswers)) {
+        // Skip answers that were already in the original answerMap
+        if (answerMap.has(id)) continue;
+        
+        const questionIndex = predictedQuestions.findIndex(q => q.id === id);
+        if (questionIndex !== -1) {
+          predictedQuestions[questionIndex] = {
+            ...predictedQuestions[questionIndex],
+            answer,
+            confidence: 0.7 // Medium-high confidence for rule-based answers
+          };
+        }
+      }
+      
+      // For any remaining unanswered questions, use a default answer
+      const stillUnanswered = predictedQuestions.filter(q => !q.answer || q.answer.trim() === '');
+      for (const question of stillUnanswered) {
+        const questionIndex = predictedQuestions.findIndex(q => q.id === question.id);
+        if (questionIndex !== -1) {
+          // Use a default answer based on the question type
+          const defaultAnswer = this.generateDefaultAnswer(question);
+          predictedQuestions[questionIndex] = {
+            ...predictedQuestions[questionIndex],
+            answer: defaultAnswer,
+            confidence: 0.3 // Low confidence for default answers
+          };
+        }
+      }
+      
+      logger.info(`Prediction complete. ${predictedQuestions.filter(q => q.answer && q.answer.trim() !== '').length} questions now have answers`);
+      return predictedQuestions;
+    } catch (error: any) {
+      logger.error('Error predicting answers:', error);
+      throw new Error(`Failed to predict answers: ${error.message}`);
+    }
+  }
+
+  /**
+   * Calculate similarity between two questions
+   * @param question1 - First question text
+   * @param question2 - Second question text
+   * @returns Similarity score between 0 and 1
+   */
+  private calculateSimilarity(question1: string, question2: string): number {
+    // Improved similarity calculation using TF-IDF like approach
+    // This gives more weight to important words and less to common words
+    
+    // Normalize and tokenize the questions
+    const words1 = this.tokenizeAndNormalize(question1);
+    const words2 = this.tokenizeAndNormalize(question2);
+    
+    if (words1.length === 0 || words2.length === 0) {
+      return 0;
+    }
+    
+    // Calculate word frequencies
+    const freq1 = this.calculateWordFrequencies(words1);
+    const freq2 = this.calculateWordFrequencies(words2);
+    
+    // Get all unique words
+    const allWords = new Set([...words1, ...words2]);
+    
+    // Calculate dot product and magnitudes
+    let dotProduct = 0;
+    let magnitude1 = 0;
+    let magnitude2 = 0;
+    
+    for (const word of allWords) {
+      // Get frequencies (0 if word doesn't exist in that question)
+      const f1 = freq1.get(word) || 0;
+      const f2 = freq2.get(word) || 0;
+      
+      // Calculate importance based on inverse document frequency
+      // Words that appear in both questions are less important
+      const importance = f1 > 0 && f2 > 0 ? 1 : 2;
+      
+      // Apply importance factor
+      const v1 = f1 * importance;
+      const v2 = f2 * importance;
+      
+      // Update calculations
+      dotProduct += v1 * v2;
+      magnitude1 += v1 * v1;
+      magnitude2 += v2 * v2;
+    }
+    
+    // Calculate cosine similarity
+    if (magnitude1 === 0 || magnitude2 === 0) {
+      return 0;
+    }
+    
+    return dotProduct / (Math.sqrt(magnitude1) * Math.sqrt(magnitude2));
+  }
+  
+  /**
+   * Tokenize and normalize text for similarity comparison
+   * @param text - Text to tokenize
+   * @returns Array of normalized tokens
+   */
+  private tokenizeAndNormalize(text: string): string[] {
+    // Convert to lowercase
+    const normalized = text.toLowerCase()
+      // Remove punctuation
+      .replace(/[^\w\s]/g, ' ')
+      // Replace multiple spaces with a single space
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // Split into words and filter out stop words and short words
+    const stopWords = new Set(['the', 'and', 'or', 'is', 'are', 'in', 'to', 'for', 'a', 'an', 'of', 'with', 'by', 'at', 'from']);
+    return normalized.split(' ')
+      .filter(word => word.length > 2 && !stopWords.has(word));
+  }
+  
+  /**
+   * Calculate word frequencies in a list of words
+   * @param words - List of words
+   * @returns Map of words to their frequencies
+   */
+  private calculateWordFrequencies(words: string[]): Map<string, number> {
+    const frequencies = new Map<string, number>();
+    
+    for (const word of words) {
+      frequencies.set(word, (frequencies.get(word) || 0) + 1);
+    }
+    
+    return frequencies;
+  }
+
+  /**
+   * Generate a default answer for a question
+   * @param question - The question to generate an answer for
+   * @returns A default answer
+   */
+  private generateDefaultAnswer(question: QuestionData): string {
+    // Check if the question has predefined options
+    if (question.options && question.options.length > 0) {
+      // Choose the most appropriate option based on the question content
+      const questionText = question.question.toLowerCase();
+      
+      // Look for the safest/most conservative option
+      const safeOptions = question.options.filter(opt => 
+        opt.toLowerCase().includes('no') || 
+        opt.toLowerCase().includes('not') ||
+        opt.toLowerCase().includes('none') ||
+        opt.toLowerCase().includes('n/a')
+      );
+      
+      if (safeOptions.length > 0) {
+        // Choose the first safe option
+        return safeOptions[0];
+      }
+      
+      // If no safe options, look for options that indicate minimal impact
+      const minimalImpactOptions = question.options.filter(opt => 
+        opt.toLowerCase().includes('minimal') || 
+        opt.toLowerCase().includes('low') ||
+        opt.toLowerCase().includes('small') ||
+        opt.toLowerCase().includes('limited')
+      );
+      
+      if (minimalImpactOptions.length > 0) {
+        // Choose the first minimal impact option
+        return minimalImpactOptions[0];
+      }
+      
+      // If no safe or minimal impact options, choose the first option
+      return question.options[0];
+    }
+    
+    // Check if the question is a yes/no question
+    const questionText = question.question.toLowerCase();
+    if (questionText.includes('is ') || questionText.includes('are ') || 
+        questionText.includes('does ') || questionText.includes('do ') ||
+        questionText.includes('has ') || questionText.includes('have ')) {
+      // For yes/no questions, default to "No" as it's usually the safer answer
+      // in a privacy/security context
+      return 'No';
+    }
+    
+    // Default answer for other types of questions
+    return 'Not applicable';
+  }
+
+  // The old predictionRules and related methods have been replaced by
+  // per-question infer() methods in the Question interface.
+  // See src/ai/prompts/questions.ts for the implementation.
+}
+
+// Export a singleton instance
+export const questionService = new QuestionService();

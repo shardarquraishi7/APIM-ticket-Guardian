@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "repo": "repo-one",
+    "repoDocuments": [
+      {
+        "sha": "123",
+        "path": "README.md"
+      },
+      {
+        "sha": "456",
+        "path": "docs/help.md"
+      },
+      {
+        "sha": "789",
+        "path": "docs/faq.md"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "repo": "repo-two",
+    "repoDocuments": [
+      {
+        "sha": "123",
+        "path": "README.md"
+      },
+      {
+        "sha": "456",
+        "path": "docs/help.md"
+      },
+      {
+        "sha": "789",
+        "path": "docs/faq.md"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "repo": "repo-three",
+    "repoDocuments": [
+      {
+        "sha": "123",
+        "path": "README.md"
+      },
+      {
+        "sha": "456",
+        "path": "docs/help.md"
+      },
+      {
+        "sha": "789",
+        "path": "docs/faq.md"
+      }
+    ]
+  }
+]

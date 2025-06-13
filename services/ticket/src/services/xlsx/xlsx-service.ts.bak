@@ -1,0 +1,356 @@
+// This file should only be imported in server components or API routes
+// as it uses Node.js modules like 'fs' and 'path'
+
+import ExcelJS from 'exceljs';
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import { createLogger } from '@/lib/logger';
+import { Section } from '@/types';
+import { getSectionFromId } from '@/services/section-service';
+
+const logger = createLogger('xlsx-service');
+
+// Define the uploads directory path
+const UPLOADS_DIR = path.join(process.cwd(), 'src', 'uploads');
+
+// Ensure the uploads directory exists
+if (typeof window === 'undefined' && !fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// Interface for question data
+export interface QuestionData {
+  id: string;
+  question: string;
+  answer?: string;
+  options?: string[];
+  confidence?: number;
+  uniqueId?: string; // Unique identifier from the Excel file
+  metadata?: {
+    merged?: boolean;
+    skipped?: boolean;
+    [key: string]: any;
+  };
+}
+
+// Interface for the DEP file structure
+export interface DEPFileStructure {
+  questions: QuestionData[];
+  answerOptions: Record<string, string[]>;
+  metadata: Record<string, any>;
+  preExistingAnswers: number; // Count of questions that already have answers
+  sectionCounts?: Record<string, number>; // Count of questions by section
+}
+
+/**
+ * Service for handling XLSX file operations
+ */
+export class XlsxService {
+  /**
+   * Save an uploaded file to the uploads directory
+   * @param buffer - The file buffer
+   * @param originalFilename - The original filename
+   * @returns The path to the saved file
+   */
+  async saveUploadedFile(buffer: Buffer, originalFilename: string): Promise<string> {
+    // Create a unique filename to avoid collisions
+    const fileExtension = path.extname(originalFilename);
+    const uniqueFilename = `${Date.now()}-${uuidv4()}${fileExtension}`;
+    const filePath = path.join(UPLOADS_DIR, uniqueFilename);
+
+    // Write the file to disk
+    await fs.promises.writeFile(filePath, buffer);
+    logger.info(`File saved to ${filePath}`);
+
+    return filePath;
+  }
+
+  /**
+   * Read and parse a DEP XLSX file
+   * @param filePath - Path to the XLSX file
+   * @returns Parsed DEP file structure
+   */
+  async readDEPFile(filePath: string): Promise<DEPFileStructure> {
+    try {
+      // Validate file extension
+      const fileExtension = path.extname(filePath).toLowerCase();
+      if (fileExtension !== '.xlsx') {
+        throw new Error('Invalid file format. Only XLSX files are supported.');
+      }
+      
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`File not found at path: ${filePath}`);
+      }
+      
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+
+      // Validate workbook structure - DEP files should have at least 3 worksheets
+      if (workbook.worksheets.length < 3) {
+        throw new Error('Invalid DEP file format. Expected at least 3 worksheets.');
+      }
+
+      // Extract questions from sheet 2 (Assessment Responses - v2)
+      const questionsSheet = workbook.getWorksheet(2);
+      const questions: QuestionData[] = [];
+      let preExistingAnswers = 0;
+      const sectionCounts: Record<string, number> = {};
+
+      if (!questionsSheet) {
+        throw new Error('Questions sheet not found in the XLSX file');
+      }
+      
+      // Validate sheet structure - check for expected headers
+      const headerRow = questionsSheet.getRow(8);
+      const questionHeader = headerRow.getCell(1).text.trim();
+      const descriptionHeader = headerRow.getCell(2).text.trim();
+      
+      if (!questionHeader.includes('Question') || !descriptionHeader.includes('Description')) {
+        throw new Error('Invalid DEP file format. Expected headers not found in questions sheet.');
+      }
+
+      // Headers are in row 8, data starts from row 9
+      const HEADER_ROW = 8;
+      const DATA_START_ROW = 9;
+      
+      // Define column indices based on the actual structure
+      const COL_QUESTION = 1;      // Column A: Question
+      const COL_DESCRIPTION = 2;   // Column B: Description
+      const COL_UNIQUE_ID = 3;     // Column C: Unique Identifier
+      const COL_PRESELECTED = 4;   // Column D: Pre-selected Options
+      const COL_RESPONSE = 5;      // Column E: Response
+      const COL_JUSTIFICATION = 6; // Column F: Justification
+      const COL_QUESTION_TYPE = 7; // Column G: Question Type
+      
+      // Process each row starting from row 9
+      questionsSheet.eachRow((row: any, rowNumber: number) => {
+        if (rowNumber >= DATA_START_ROW) {
+          const questionText = row.getCell(COL_QUESTION).text.trim();
+          const description = row.getCell(COL_DESCRIPTION).text.trim();
+          const uniqueId = row.getCell(COL_UNIQUE_ID).text.trim();
+          const preselectedOptions = row.getCell(COL_PRESELECTED).text.trim();
+          const response = row.getCell(COL_RESPONSE).text.trim();
+          const justification = row.getCell(COL_JUSTIFICATION).text.trim();
+          const questionType = row.getCell(COL_QUESTION_TYPE).text.trim();
+          
+          // Skip empty rows
+          if (!questionText || !uniqueId) {
+            return;
+          }
+          
+          // Extract section ID from question using the section-service
+          const sectionId = getSectionFromId(questionText) || 'unknown';
+          
+          // Count questions by section
+          sectionCounts[sectionId] = (sectionCounts[sectionId] || 0) + 1;
+          
+          // Check if the question already has an answer
+          if (response && response.trim() !== '') {
+            preExistingAnswers++;
+          }
+          
+          // Determine question options based on question type
+          let options: string[] = [];
+          if (questionType && (
+              questionType.includes('Choice') || 
+              questionType.includes('select') || 
+              questionType.includes('Select')
+          )) {
+            // For multiple choice questions, we'll get options from sheet 3 later
+          }
+          
+          // Add the question to our list
+          questions.push({
+            id: questionText,
+            question: description,
+            answer: response || undefined,
+            options: options.length > 0 ? options : undefined,
+            uniqueId: uniqueId
+          });
+        }
+      });
+
+      // Extract answer options from sheet 3 (Assessment Response Options)
+      const optionsSheet = workbook.getWorksheet(3);
+      const answerOptions: Record<string, string[]> = {};
+
+      if (optionsSheet) {
+        // Process each row to extract question ID and options
+        optionsSheet.eachRow((row: any, rowNumber: number) => {
+          if (rowNumber > 1) { // Skip header row
+            const questionId = row.getCell(1).text.trim();
+            const option = row.getCell(2).text.trim();
+
+            if (questionId && option) {
+              if (!answerOptions[questionId]) {
+                answerOptions[questionId] = [];
+              }
+              answerOptions[questionId].push(option);
+            }
+          }
+        });
+        
+        // Assign options to questions
+        questions.forEach((question: QuestionData) => {
+          if (answerOptions[question.id]) {
+            question.options = answerOptions[question.id];
+          }
+        });
+      }
+
+      // Extract metadata from sheet 1 (Instructions)
+      const metadataSheet = workbook.getWorksheet(1);
+      const metadata: Record<string, any> = {
+        sectionCounts
+      };
+
+      logger.info(`Read DEP file with ${questions.length} questions, ${preExistingAnswers} pre-existing answers`);
+      logger.info(`Found ${Object.keys(sectionCounts).length} sections`);
+
+      return { 
+        questions, 
+        answerOptions, 
+        metadata, 
+        preExistingAnswers,
+        sectionCounts
+      };
+    } catch (error: any) {
+      logger.error('Error reading DEP file:', error);
+      throw new Error(`Failed to read DEP file: ${error.message || 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Update a DEP XLSX file with new answers
+   * @param filePath - Path to the XLSX file
+   * @param updatedQuestions - Questions with updated answers
+   * @returns Path to the updated file
+   */
+  async updateDEPFile(filePath: string, updatedQuestions: QuestionData[]): Promise<string> {
+    try {
+      // Create a backup of the original file
+      const backupFilePath = `${filePath}.backup-${Date.now()}`;
+      await fs.promises.copyFile(filePath, backupFilePath);
+      logger.info(`Created backup of original file at: ${backupFilePath}`);
+      
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+
+      // Get the questions sheet (sheet 2)
+      const questionsSheet = workbook.getWorksheet(2);
+
+      if (!questionsSheet) {
+        throw new Error('Questions sheet not found in the XLSX file');
+      }
+
+      // Define column indices based on the actual structure
+      const COL_QUESTION = 1;      // Column A: Question
+      const COL_UNIQUE_ID = 3;     // Column C: Unique Identifier
+      const COL_RESPONSE = 5;      // Column E: Response
+      
+      // Create maps of question IDs and unique IDs to their updated answers
+      const answersByQuestionId = new Map<string, string>();
+      const answersByUniqueId = new Map<string, string>();
+      
+      updatedQuestions.forEach(q => {
+        if (q.id && q.answer) {
+          answersByQuestionId.set(q.id, q.answer);
+          
+          // If the question has a uniqueId, also map by uniqueId
+          if (q.uniqueId) {
+            answersByUniqueId.set(q.uniqueId, q.answer);
+          }
+        }
+      });
+
+      // Log the answers we're trying to update
+      logger.info(`Updating answers for ${updatedQuestions.length} questions`);
+      logger.info(`Answers by uniqueId: ${answersByUniqueId.size}, Answers by questionId: ${answersByQuestionId.size}`);
+      
+      // Sample a few answers for debugging
+      const sampleUniqueIds = Array.from(answersByUniqueId.keys()).slice(0, 3);
+      const sampleQuestionIds = Array.from(answersByQuestionId.keys()).slice(0, 3);
+      
+      logger.info(`Sample uniqueIds: ${sampleUniqueIds.join(', ')}`);
+      logger.info(`Sample questionIds: ${sampleQuestionIds.join(', ')}`);
+      
+      // Update the answers in the sheet
+      let updatedCount = 0;
+      questionsSheet.eachRow((row: any, rowNumber: number) => {
+        if (rowNumber >= 9) { // Skip header rows (data starts at row 9)
+          const questionText = row.getCell(COL_QUESTION).text.trim();
+          const uniqueId = row.getCell(COL_UNIQUE_ID).text.trim();
+          const currentResponse = row.getCell(COL_RESPONSE).text.trim();
+          
+          // Try to find the answer by uniqueId first, then by question text
+          let answer: string | undefined;
+          let matchType = '';
+          
+          if (uniqueId && answersByUniqueId.has(uniqueId)) {
+            answer = answersByUniqueId.get(uniqueId);
+            matchType = 'uniqueId';
+          } else if (questionText && answersByQuestionId.has(questionText)) {
+            answer = answersByQuestionId.get(questionText);
+            matchType = 'questionId';
+          }
+          
+          if (answer) {
+            // Update the answer cell in column E (Response)
+            row.getCell(COL_RESPONSE).value = answer;
+            updatedCount++;
+            logger.info(`Updated answer for question: ${questionText} (${uniqueId}) via ${matchType}. Old: "${currentResponse}", New: "${answer}"`);
+          }
+        }
+      });
+      
+      logger.info(`Updated ${updatedCount} answers in the DEP file`);
+
+      // Save the updated workbook back to the original file
+      await workbook.xlsx.writeFile(filePath);
+      logger.info(`Updated file saved back to original file: ${filePath}`);
+
+      return filePath;
+    } catch (error: any) {
+      logger.error('Error updating DEP file:', error);
+      throw new Error(`Failed to update DEP file: ${error.message || 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Clean up old files from the uploads directory
+   * @param maxAgeHours - Maximum age of files to keep (in hours)
+   * @param excludePatterns - Array of regex patterns for files to exclude from cleanup
+   */
+  async cleanupOldFiles(maxAgeHours = 24, excludePatterns: RegExp[] = []): Promise<void> {
+    try {
+      const files = await fs.promises.readdir(UPLOADS_DIR);
+      const now = Date.now();
+      const maxAgeMs = maxAgeHours * 60 * 60 * 1000;
+
+      for (const file of files) {
+        const filePath = path.join(UPLOADS_DIR, file);
+        const stats = await fs.promises.stat(filePath);
+        
+        // Skip files that match exclude patterns
+        const shouldExclude = excludePatterns.some(pattern => pattern.test(file));
+        if (shouldExclude) {
+          logger.info(`Skipping excluded file: ${filePath}`);
+          continue;
+        }
+
+        // Check if the file is older than the maximum age
+        if (now - stats.mtimeMs > maxAgeMs) {
+          await fs.promises.unlink(filePath);
+          logger.info(`Deleted old file: ${filePath}`);
+        }
+      }
+    } catch (error: any) {
+      logger.error('Error cleaning up old files:', error);
+    }
+  }
+}
+
+// Export a singleton instance
+export const xlsxService = new XlsxService();

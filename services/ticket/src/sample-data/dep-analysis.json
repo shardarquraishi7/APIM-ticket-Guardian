@@ -1,0 +1,39 @@
+{
+  "totalQuestions": 209,
+  "preExistingAnswers": 8,
+  "sectionCounts": {
+    "1": 6,
+    "2": 39,
+    "3": 7,
+    "4": 20,
+    "5": 24,
+    "6": 7,
+    "7": 22,
+    "8": 24,
+    "9": 20,
+    "10": 6,
+    "11": 13,
+    "12": 7,
+    "13": 14
+  },
+  "anchorQuestions": [
+    {
+      "id": "2.6 Is personal information in scope for this initiative? (Single selection allowed) *",
+      "question": "Find out what is considered personal information here"
+    },
+    {
+      "id": "2.7 Is Personal Health Information in scope? (Single selection allowed) *",
+      "question": ""
+    },
+    {
+      "id": "7.3 Does this initiative use Generative AI?  (Single selection allowed) *",
+      "question": "Generative Artificial Intelligence (GenAI) is artificial intelligence capable of generating text, images, videos or other data using generative models (for example, large language models like GPT, Gemini or LLAMA)."
+    }
+  ],
+  "predictedCount": 206,
+  "confidenceLevels": {
+    "high": 209,
+    "medium": 0,
+    "low": 0
+  }
+}

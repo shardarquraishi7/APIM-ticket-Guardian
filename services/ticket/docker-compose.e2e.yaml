@@ -1,0 +1,25 @@
+version: '3'
+services:
+  web_app:
+    container_name: web_app
+    env_file: ${E2E_ENV_FILE:-.env.production}
+    build:
+      context: .
+      args:
+        ENV_FILE: ${E2E_ENV_FILE:-.env.production}
+        NPMRC: ${NPMRC}
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+  cypress:
+    image: cypress/included:10.3.0
+    env_file: ${E2E_ENV_FILE:-.env.production}
+    depends_on:
+      - web_app
+    working_dir: /app
+    environment:
+      - CYPRESS_BASE_URL=${APP_BASE_URL:-http://web_app:4000}
+      - NODE_ENV=production
+    volumes:
+      - ./:/app/

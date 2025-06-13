@@ -1,0 +1,151 @@
+applicationName: sia-copilot
+environment: st
+replicas: 1
+namespace: sia-copilot
+type: deployment
+
+multiclusterservice:
+  enabled: false
+
+job_purpose: ''
+
+containerPort: 8080
+
+openshift:
+  enabled: false
+
+telus:
+  organization: cdo
+
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  runAsGroup: 1001
+  runAsUser: 1001
+  supplementalGroups:
+    - 1001
+
+containerSecurityContext:
+  enabled: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - NET_RAW
+  runAsGroup: 1001
+  runAsUser: 1001
+
+dnsConfig:
+  enabled: false
+  searches:
+    - corp.ads
+
+# DNS Automate configuration
+dns:
+  name: sia-copilot-st
+  enabled: true
+  rrdatas:
+    - kong-workforce-gateway-np.cloudapps.telus.com.
+
+extraLabels:
+  sidecar.istio.io/inject: 'true'
+
+meshpolicy:
+  enabled: true
+  principals:
+    - cdo-gke-fleet-host-np-569989.svc.id.goog/ns/kong-workforce/sa/kong-serviceaccount
+
+extraEnvs:
+  - name: PORT
+    value: 8080
+  - name: GOOGLE_CLOUD_PROJECT
+    value: cdo-sia-copilot-np-ccb114
+
+volumes: '' # Keep as empty string since secretMounts handles the volume definition
+
+volumeMounts: [] # Remove duplicate mount since we're using secretMounts
+
+secretMounts:
+  - name: sia-db-certs
+    path: /home/node/app/sia
+    secretName: sia-db-certs
+
+# startupProbe:
+#   httpGet:
+#     path: /api/version
+#     port: 8080
+#     failureThreshold: 6
+#     periodSeconds: 10
+
+livenessProbe:
+  httpGet:
+    path: /api/version
+    port: 8080
+
+readinessProbe:
+  httpGet:
+    path: /api/version
+    port: 8080
+
+image:
+  repository: northamerica-northeast1-docker.pkg.dev/cio-gke-devops-e4993356/applications/sia-copilot/sia-copilot-st
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 75
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+prometheus:
+  enable: false
+  scrapePath: /metrics
+  scrapePort: 8080
+
+podmonitoring:
+  enabled: false
+  interval: 30s
+  path: /metrics
+  port: 8080
+
+# initContainers: |
+#   - name: migrate-db
+#     image: northamerica-northeast1-docker.pkg.dev/cio-gke-devops-e4993356/applications/sia-copilot/sia-copilot-st
+#     command:
+#       - /bin/sh
+#       - -c
+#       - npm run db:migrate
+#     resources:
+#       limits:
+#         cpu: 500m
+#         memory: 512Mi
+#       requests:
+#         cpu: 250m
+#         memory: 256Mi
+#     env:
+#       - name: PORT
+#         value: 8080
+#       - name: GOOGLE_CLOUD_PROJECT
+#         value: cdo-sia-copilot-np-ccb114

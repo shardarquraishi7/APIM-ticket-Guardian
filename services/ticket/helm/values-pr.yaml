@@ -1,0 +1,77 @@
+applicationName: sia-copilot
+environment: pr
+replicas: 1
+namespace: sia-copilot
+type: deployment
+multiclusterservice:
+  enabled: false
+job_purpose: ""
+containerPort: 8080
+openshift:
+  enabled: false
+telus:
+  organization: cdo
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+  runAsGroup: 1001
+  runAsUser: 1001
+  supplementalGroups:
+    - 1001
+containerSecurityContext:
+  enabled: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - NET_RAW
+  runAsGroup: 1001
+  runAsUser: 1001
+dnsConfig:
+  enabled: false
+  searches:
+    - corp.ads
+extraEnvs:
+  - name: PORT
+    value: 8080
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8080
+readinessProbe:
+  httpGet:
+    path: /api/version
+    port: 8080
+image:
+  repository: northamerica-northeast1-docker.pkg.dev/cio-gke-devops-e4993356/applications/sia-copilot/sia-copilot-pr
+  tag: latest
+  pullPolicy: Always
+service:
+  type: ClusterIP
+  port: 8080
+ingress:
+  enabled: false
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 75
+nodeSelector: {}
+tolerations: []
+affinity: {}
+prometheus:
+  enable: false
+  scrapePath: /metrics
+  scrapePort: 8080
+podmonitoring:
+  enabled: false
+  interval: 30s
+  path: /metrics
+  port: 8080

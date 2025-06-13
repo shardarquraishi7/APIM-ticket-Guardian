@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "extends": ["next/core-web-vitals"],
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
+      "plugins": ["testing-library", "jest"],
+      "env": { "jest/globals": true },
+      "extends": ["plugin:testing-library/react"],
+      "excludedFiles": ["**/cypress/**"]
+    },
+    {
+      "files": ["**/cypress/**"],
+      "env": { "cypress/globals": true },
+      "extends": ["plugin:cypress/recommended"]
+    }
+  ]
+}
